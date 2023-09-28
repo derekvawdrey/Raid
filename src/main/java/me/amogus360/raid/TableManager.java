@@ -67,6 +67,15 @@ public class TableManager {
     // Add methods for other table-related operations here
 
     public void insertPlayer(UUID playerUUID, String playerName) {
+        // First, check if a player with the same UUID already exists
+        if (playerExists(playerUUID)) {
+            // Handle the case where the player already exists (e.g., update their data)
+            // You can add your logic here if needed.
+            System.out.println("Player with UUID " + playerUUID + " already exists.");
+            return; // Exit the method without inserting a new record
+        }
+
+        // If the player doesn't exist, insert a new record
         String insertSQL = "INSERT INTO player_data (player_uuid, player_name) VALUES (?, ?);";
         try (PreparedStatement preparedStatement = connection.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, playerUUID.toString());
@@ -88,6 +97,22 @@ public class TableManager {
             e.printStackTrace();
         }
     }
+
+    private boolean playerExists(UUID playerUUID) {
+        String querySQL = "SELECT COUNT(*) FROM player_data WHERE player_uuid = ?;";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(querySQL)) {
+            preparedStatement.setString(1, playerUUID.toString());
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                int count = resultSet.getInt(1);
+                return count > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false; // Default to assuming the player doesn't exist in case of errors
+    }
+
 
     private void insertMoneyData(int playerId) {
         String insertSQL = "INSERT INTO money_data (player_id) VALUES (?);";
