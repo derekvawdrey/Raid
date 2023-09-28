@@ -1,61 +1,38 @@
 package me.amogus360.raid.Commands;
-import me.amogus360.raid.TableManager;
-import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
+import me.amogus360.raid.RaidCommandManager;
 import org.bukkit.command.CommandSender;
+
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.UUID;
 
-public class AddMoneyCommand implements CommandExecutor {
+public class AddMoneyCommand extends RaidCommand {
 
-    private final TableManager tableManager;
-
-    public AddMoneyCommand(TableManager tableManager) {
-        this.tableManager = tableManager;
+    public AddMoneyCommand(JavaPlugin plugin) {
+        super(plugin);
     }
-
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player)) {
-            sender.sendMessage("Only players can use this command.");
-            return true;
+    public void execute(CommandSender sender, String[] args, RaidCommandManager commandManager) {
+        if (args.length != 3) {
+            sender.sendMessage("Usage: /raid addmoney <player> <amount>");
+            return;
         }
 
-        if (args.length < 2) {
-            sender.sendMessage("Usage: /addmoney <player> <amount>");
-            return true;
-        }
-
-        Player targetPlayer = Bukkit.getPlayer(args[0]);
-
-        if (targetPlayer == null) {
-            sender.sendMessage("Player not found.");
-            return true;
-        }
-
+        String playerName = args[1];
         int amount;
 
         try {
-            amount = Integer.parseInt(args[1]);
+            amount = Integer.parseInt(args[2]);
         } catch (NumberFormatException e) {
             sender.sendMessage("Invalid amount. Please enter a valid number.");
-            return true;
+            return;
         }
 
-        if (amount < 0) {
-            sender.sendMessage("Amount cannot be negative.");
-            return true;
-        }
+        Player targetPlayer = plugin.getServer().getPlayer(playerName);
+        UUID playerUUID = targetPlayer.getUniqueId();
 
-        // Add the specified amount of money to the target player
-        UUID targetUUID = targetPlayer.getUniqueId();
-        tableManager.addMoney(targetUUID, amount);
 
-        sender.sendMessage("Added " + amount + " money to " + targetPlayer.getName() + "'s account.");
-        targetPlayer.sendMessage("You received " + amount + " money.");
 
-        return true;
     }
 }

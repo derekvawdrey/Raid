@@ -1,41 +1,34 @@
 package me.amogus360.raid.Commands;
-
-import me.amogus360.raid.TableManager;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
+import me.amogus360.raid.RaidCommandManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.UUID;
+public class MoneyCommand extends RaidCommand {
 
-public class MoneyCommand implements CommandExecutor {
-
-    private final TableManager tableManager;
-
-    public MoneyCommand(TableManager tableManager) {
-        this.tableManager = tableManager;
+    public MoneyCommand(JavaPlugin plugin) {
+        super(plugin);
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public void execute(CommandSender sender, String[] args, RaidCommandManager commandManager) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("Only players can check their money.");
-            return true;
+            sender.sendMessage("Only players can use this command.");
+            return;
         }
 
+        // Your logic for /raid money here
         Player player = (Player) sender;
-        UUID playerUUID = player.getUniqueId();
 
-        // Check if the player exists in the database
-        if (!tableManager.playerExists(playerUUID)) {
-            player.sendMessage("You are not registered in the database. Please contact an admin.");
-            return true;
-        }
+        // Example: Get the player's balance
+        int balance = getBalance(player);
 
-        // Retrieve the player's money from the database
-        int money = tableManager.getPlayerMoney(playerUUID);
+        sender.sendMessage("Your balance: " + balance);
+    }
 
-        player.sendMessage("Your current money: " + money);
-        return true;
+    // You can define common methods for all commands here
+    private int getBalance(Player player) {
+        // Your logic to retrieve the player's balance from your data source
+        return 0; // Replace with actual logic
     }
 }

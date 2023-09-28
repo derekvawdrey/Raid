@@ -30,8 +30,7 @@ public class Raid extends JavaPlugin implements Listener {
     }
 
     private void initCommands(TableManager tableManager){
-        getCommand("money").setExecutor(new MoneyCommand(tableManager));
-        getCommand("addmoney").setExecutor(new AddMoneyCommand(tableManager));
+        getCommand("raid").setExecutor(new RaidCommandManager(this, connection));
     }
 
     private void initEvents(TableManager tableManager){
