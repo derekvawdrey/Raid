@@ -1,5 +1,7 @@
 package me.amogus360.raid;
 
+import me.amogus360.raid.Commands.AddMoneyCommand;
+import me.amogus360.raid.Commands.MoneyCommand;
 import me.amogus360.raid.EventHandlers.PlayerJoinEventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
@@ -23,6 +25,16 @@ public class Raid extends JavaPlugin implements Listener {
         TableManager tableManager = new TableManager(connection);
         tableManager.createTables();
 
+        initCommands(tableManager);
+        initEvents(tableManager);
+    }
+
+    private void initCommands(TableManager tableManager){
+        getCommand("money").setExecutor(new MoneyCommand(tableManager));
+        getCommand("addmoney").setExecutor(new AddMoneyCommand(tableManager));
+    }
+
+    private void initEvents(TableManager tableManager){
         // Register the event handler
         PluginManager pluginManager = getServer().getPluginManager();
         pluginManager.registerEvents(new PlayerJoinEventHandler(tableManager), this);

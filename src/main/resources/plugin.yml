@@ -3,3 +3,11 @@ version: 1.0.0
 main: me.amogus360.raid.Raid
 api-version: 1.20
 load: startup
+commands:
+  money:
+    description: Check your money
+    usage: /money
+  addmoney:
+    description: Add money to a player
+    usage: /addmoney <player> <amount>
+

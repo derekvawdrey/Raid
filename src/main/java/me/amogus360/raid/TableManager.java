@@ -98,7 +98,7 @@ public class TableManager {
         }
     }
 
-    private boolean playerExists(UUID playerUUID) {
+    public boolean playerExists(UUID playerUUID) {
         String querySQL = "SELECT COUNT(*) FROM player_data WHERE player_uuid = ?;";
         try (PreparedStatement preparedStatement = connection.prepareStatement(querySQL)) {
             preparedStatement.setString(1, playerUUID.toString());
@@ -123,4 +123,30 @@ public class TableManager {
             e.printStackTrace();
         }
     }
+
+    public void addMoney(UUID playerUUID, int amount) {
+        String updateSQL = "UPDATE money_data SET money = money + ? WHERE player_id = (SELECT id FROM player_data WHERE player_uuid = ?);";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(updateSQL)) {
+            preparedStatement.setInt(1, amount);
+            preparedStatement.setString(2, playerUUID.toString());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public int getPlayerMoney(UUID playerUUID) {
+        String querySQL = "SELECT money FROM money_data WHERE player_id = (SELECT id FROM player_data WHERE player_uuid = ?);";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(querySQL)) {
+            preparedStatement.setString(1, playerUUID.toString());
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getInt("money");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0; // Default to 0 in case of errors or if the player is not found
+    }
+
 }
