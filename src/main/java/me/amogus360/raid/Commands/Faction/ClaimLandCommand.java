@@ -55,9 +55,4 @@ public class ClaimLandCommand extends RaidCommand {
         factionDao.claimLand(factionId,player.getLocation());
         player.sendMessage("Land claimed successfully.");
     }
-
-    private void executeLandClaim(Location location) {
-        // Add the new land claim to the database
-        // Implement this logic to insert the claim into your database
-    }
 }
