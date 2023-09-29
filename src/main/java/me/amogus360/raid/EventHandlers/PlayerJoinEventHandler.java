@@ -1,11 +1,14 @@
 package me.amogus360.raid.EventHandlers;
 
+import me.amogus360.raid.DAO.PlayerAccountDao;
+import me.amogus360.raid.MessageManager;
 import me.amogus360.raid.TableManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
+import java.sql.SQLException;
 import java.util.UUID;
 
 public class PlayerJoinEventHandler implements Listener {
@@ -17,7 +20,7 @@ public class PlayerJoinEventHandler implements Listener {
     }
 
     @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
+    public void onPlayerJoin(PlayerJoinEvent event) throws SQLException {
         // Get the player who joined
         Player player = event.getPlayer();
 
@@ -26,10 +29,11 @@ public class PlayerJoinEventHandler implements Listener {
         UUID playerUUID = player.getUniqueId();
 
         // Insert the player's username and UUID into the database
-        tableManager.insertPlayer(playerUUID, playerName);
+        PlayerAccountDao pad = new PlayerAccountDao(tableManager.getConnection());
+        pad.createAccount(playerUUID, playerName);
 
         // Perform any other actions you want
         // For example, send a welcome message to the player
-        player.sendMessage("Welcome to the server, " + playerName + "!");
+        MessageManager.sendMessage(player,"Welcome to the server, " + playerName + "!");
     }
 }

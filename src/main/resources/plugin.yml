@@ -4,10 +4,22 @@ main: me.amogus360.raid.Raid
 api-version: 1.20
 load: startup
 commands:
-  money:
-    description: Check your money
-    usage: /money
-  addmoney:
-    description: Add money to a player
-    usage: /addmoney <player> <amount>
+  raid:
+    description: Main command for the Raid plugin
+    usage: /raid <subcommand>
+    aliases: [r]
+    subcommands:
+      money:
+        description: Money-related commands
+        usage: /raid money <subcommand>
+        aliases: [m]
+        subcommands:
+          send:
+            description: Send money to another player
+            usage: /raid money send <player> <amount>
+          add:
+            description: Add money to a player's account
+            usage: /raid money add <player> <amount>
+
+
 

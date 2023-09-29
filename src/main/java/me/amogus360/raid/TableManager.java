@@ -15,6 +15,10 @@ public class TableManager {
         this.connection = connection;
     }
 
+    public Connection getConnection(){
+        return this.connection;
+    }
+
     public void createTables() {
         createPlayerDataTable();
         createMoneyDataTable();

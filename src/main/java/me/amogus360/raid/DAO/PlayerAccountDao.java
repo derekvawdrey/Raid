@@ -78,6 +78,22 @@ public class PlayerAccountDao {
         }
     }
 
+    public boolean transferMoney(UUID senderUUID, UUID recipientUUID, int amount) throws SQLException {
+        // Check if the sender has enough money
+        int senderBalance = getBalance(senderUUID);
+
+        if (senderBalance < amount) {
+            System.out.println("Insufficient balance to transfer.");
+            return false;
+        }
+        // Update the sender's balance (subtract the amount)
+        updateBalance(senderUUID, -amount);
+        // Update the recipient's balance (add the amount)
+        updateBalance(recipientUUID, amount);
+        return true;
+    }
+
+
     public int getBalance(UUID playerUUID) throws SQLException{
         String querySQL = "SELECT money FROM money_data WHERE player_id = (SELECT id FROM player_data WHERE player_uuid = ?);";
         try (PreparedStatement preparedStatement = connection.prepareStatement(querySQL)) {

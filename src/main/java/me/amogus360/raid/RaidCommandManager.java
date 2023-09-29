@@ -2,6 +2,7 @@ package me.amogus360.raid;
 
 import me.amogus360.raid.Commands.AddMoneyCommand;
 import me.amogus360.raid.Commands.MoneyCommand;
+import me.amogus360.raid.Commands.SendMoneyCommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -31,24 +32,32 @@ public class RaidCommandManager implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {
             // Display a help message or handle it as needed
-            sender.sendMessage("Usage: /raid <subcommand>");
+            MessageManager.sendMessage(sender,"Usage: /raid <subcommand>");
             return true;
         }
 
         // Determine the subcommand and delegate to the appropriate class
         String subcommand = args[0].toLowerCase();
-
-        if (subcommand.equals("addmoney")) {
-            // Handle /raid addmoney
-            new AddMoneyCommand(plugin).execute(sender, args, this);
-        } else if (subcommand.equals("money")) {
+        // Remove the first element (subcommand) from the args array
+        String[] newArgs = removeOneArg(args);
+        if (subcommand.equals("money")) {
             // Handle /raid money
-            new MoneyCommand(plugin).execute(sender, args,this);
-        } else {
+            if(newArgs.length < 1) new MoneyCommand(plugin, "/raid money").execute(sender, newArgs,this);
+            else if(newArgs[0].equals("add")) new AddMoneyCommand(plugin, "/raid money add [player_name] [amount]").execute(sender, removeOneArg(newArgs), this);
+            else if(newArgs[0].equals("send")) new SendMoneyCommand(plugin, "/raid money send [player_name] [amount]").execute(sender, removeOneArg(newArgs),this);
+
+        }
+        else {
             // Unknown subcommand
-            sender.sendMessage("Unknown subcommand: " + subcommand);
+            MessageManager.sendMessage(sender,"Unknown subcommand: " + subcommand);
         }
 
         return true;
+    }
+
+    private String[] removeOneArg(String[] args){
+        String[] newArgs = new String[args.length - 1];
+        System.arraycopy(args, 1, newArgs, 0, args.length - 1);
+        return newArgs;
     }
 }

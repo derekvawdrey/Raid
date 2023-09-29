@@ -1,4 +1,6 @@
 package me.amogus360.raid.Commands;
+import me.amogus360.raid.DAO.PlayerAccountDao;
+import me.amogus360.raid.MessageManager;
 import me.amogus360.raid.RaidCommandManager;
 import org.bukkit.command.CommandSender;
 
@@ -9,28 +11,33 @@ import java.util.UUID;
 
 public class AddMoneyCommand extends RaidCommand {
 
-    public AddMoneyCommand(JavaPlugin plugin) {
-        super(plugin);
+    public AddMoneyCommand(JavaPlugin plugin, String usage) {
+        super(plugin, usage);
     }
     @Override
     public void execute(CommandSender sender, String[] args, RaidCommandManager commandManager) {
-        if (args.length != 3) {
-            sender.sendMessage("Usage: /raid addmoney <player> <amount>");
+        if (args.length != 2) {
+            this.tellUsage(sender);
             return;
         }
 
-        String playerName = args[1];
+        String playerName = args[0];
         int amount;
 
         try {
-            amount = Integer.parseInt(args[2]);
+            amount = Integer.parseInt(args[1]);
         } catch (NumberFormatException e) {
-            sender.sendMessage("Invalid amount. Please enter a valid number.");
+            MessageManager.sendMessage(sender,"Invalid amount. Please enter a valid number.");
             return;
         }
 
         Player targetPlayer = plugin.getServer().getPlayer(playerName);
         UUID playerUUID = targetPlayer.getUniqueId();
+        try {
+            new PlayerAccountDao(commandManager.returnConnect()).updateBalance(playerUUID,amount);
+        } catch(Exception e) {
+
+        }
 
 
 
