@@ -82,6 +82,7 @@ public class TableManager {
                             "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                             "name TEXT NOT NULL," +
                             "owner_id INTEGER," +
+                            "money INT DEFAULT 0," + // Add a money column with a default value of 0
                             "FOREIGN KEY (owner_id) REFERENCES player_data (id)" +
                             ");";
 
@@ -92,6 +93,7 @@ public class TableManager {
             e.printStackTrace();
         }
     }
+
 
 
     private void createMoneyDataTable() {

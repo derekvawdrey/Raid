@@ -108,5 +108,24 @@ public class PlayerAccountDao {
         return 0; // Default to 0 in case of errors or if the player is not found
     }
 
+    public int getPlayerIdByUUID(UUID playerUUID) {
+        String getPlayerIdSQL = "SELECT id FROM player_data WHERE player_uuid = ?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getPlayerIdSQL)) {
+            preparedStatement.setString(1, playerUUID.toString());
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getInt("id"); // Return the player's ID
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        // Return -1 if the player's UUID is not found or there's an error
+        return -1;
+    }
+
     // Other CRUD methods
 }
