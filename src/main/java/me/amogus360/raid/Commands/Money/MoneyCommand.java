@@ -1,4 +1,5 @@
-package me.amogus360.raid.Commands;
+package me.amogus360.raid.Commands.Money;
+import me.amogus360.raid.Commands.RaidCommand;
 import me.amogus360.raid.DAO.PlayerAccountDao;
 import me.amogus360.raid.MessageManager;
 import me.amogus360.raid.RaidCommandManager;

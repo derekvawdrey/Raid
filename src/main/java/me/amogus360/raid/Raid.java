@@ -1,7 +1,5 @@
 package me.amogus360.raid;
 
-import me.amogus360.raid.Commands.AddMoneyCommand;
-import me.amogus360.raid.Commands.MoneyCommand;
 import me.amogus360.raid.EventHandlers.PlayerJoinEventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
