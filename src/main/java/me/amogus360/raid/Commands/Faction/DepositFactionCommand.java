@@ -3,6 +3,7 @@ package me.amogus360.raid.Commands.Faction;
 import me.amogus360.raid.Commands.RaidCommand;
 import me.amogus360.raid.DAO.FactionDao;
 import me.amogus360.raid.DAO.PlayerAccountDao;
+import me.amogus360.raid.MessageManager;
 import me.amogus360.raid.RaidCommandManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -23,7 +24,7 @@ public class DepositFactionCommand extends RaidCommand {
     @Override
     public void execute(CommandSender sender, String[] args, RaidCommandManager commandManager) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("Only players can use this command.");
+            MessageManager.sendMessage(sender,"Only players can use this command.");
             return;
         }
 
@@ -32,18 +33,18 @@ public class DepositFactionCommand extends RaidCommand {
 
         // Check if the player is in a faction
         if (!factionDao.isPlayerInFaction(playerUUID)) {
-            player.sendMessage("You are not currently in a faction.");
+            MessageManager.sendMessage(player,"You are not currently in a faction.");
             return;
         }
 
         // Check if the player is the owner of the faction
         if (!factionDao.isPlayerFactionOwner(playerUUID)) {
-            player.sendMessage("Only the faction owner can deposit money.");
+            MessageManager.sendMessage(player,"Only the faction owner can deposit money.");
             return;
         }
 
         if (args.length != 1) {
-            player.sendMessage("Usage: /depositmoney <amount>");
+            MessageManager.sendMessage(player,"Usage: /depositmoney <amount>");
             return;
         }
 
@@ -51,20 +52,20 @@ public class DepositFactionCommand extends RaidCommand {
         try {
             amount = Integer.parseInt(args[0]);
         } catch (NumberFormatException e) {
-            player.sendMessage("Please enter a valid amount.");
+            MessageManager.sendMessage(player,"Please enter a valid amount.");
             return;
         }
 
         // Check if the amount is positive
         if (amount <= 0) {
-            player.sendMessage("Please enter a positive amount.");
+            MessageManager.sendMessage(player,"Please enter a positive amount.");
             return;
         }
 
         try {
             int playerBalance = this.playerDao.getBalance(playerUUID);
             if (playerBalance < amount) {
-                player.sendMessage("You do not have enough money to deposit.");
+                MessageManager.sendMessage(player,"You do not have enough money to deposit.");
                 return;
             }
         }
@@ -76,6 +77,6 @@ public class DepositFactionCommand extends RaidCommand {
 
         // Deposit money into the faction bank
         factionDao.depositMoneyToFaction(playerUUID, factionName, amount);
-        player.sendMessage("You have deposited " + amount + " money into your faction's bank.");
+        MessageManager.sendMessage(player,"You have deposited " + amount + " money into your faction's bank.");
     }
 }

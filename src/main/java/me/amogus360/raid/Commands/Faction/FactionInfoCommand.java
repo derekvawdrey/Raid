@@ -2,6 +2,7 @@ package me.amogus360.raid.Commands.Faction;
 
 import me.amogus360.raid.Commands.RaidCommand;
 import me.amogus360.raid.DAO.FactionDao;
+import me.amogus360.raid.MessageManager;
 import me.amogus360.raid.Model.FactionInfo;
 import me.amogus360.raid.RaidCommandManager;
 import org.bukkit.command.Command;
@@ -20,7 +21,7 @@ public class FactionInfoCommand extends RaidCommand {
     @Override
     public void execute(CommandSender sender, String[] args, RaidCommandManager commandManager) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("This command can only be used by players.");
+            MessageManager.sendMessage(sender,"This command can only be used by players.");
             return;
         }
 
@@ -31,10 +32,10 @@ public class FactionInfoCommand extends RaidCommand {
         FactionInfo factionInfo = factionDataAccess.getFactionInfoByPlayerUUID(playerUUID);
 
         if (factionInfo != null) {
-            player.sendMessage("You are a member of the faction '" + factionInfo.getFactionName() + "'.");
-            player.sendMessage("Faction Owner: " + factionInfo.getFactionOwnerUUID());
+            MessageManager.sendMessage(player,"You are a member of the faction '" + factionInfo.getFactionName() + "'.");
+            MessageManager.sendMessage(player,"Faction Owner: " + factionInfo.getFactionOwnerUUID());
         } else {
-            player.sendMessage("You are not currently in a faction.");
+            MessageManager.sendMessage(player,"You are not currently in a faction.");
         }
 
         return;
