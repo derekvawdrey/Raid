@@ -10,10 +10,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.UUID;
 
 public class CreateFactionCommand extends RaidCommand {
-    private final FactionDao factionDataAccess;
+    private final FactionDao factionDao;
+
     public CreateFactionCommand(JavaPlugin plugin, String usage, FactionDao factionDataAccess) {
         super(plugin, usage);
-        this.factionDataAccess = factionDataAccess;
+        this.factionDao = factionDataAccess;
     }
 
     @Override
@@ -23,24 +24,27 @@ public class CreateFactionCommand extends RaidCommand {
             return;
         }
 
-        if(args.length != 1){
-            // TODO: Tell the user that there can be no spaces
-            this.tellUsage(sender);
+        if (args.length != 1) {
+            sender.sendMessage("Usage: /createfaction <faction_name>");
+            return;
         }
 
         Player player = (Player) sender;
         UUID playerUUID = player.getUniqueId();
-        FactionDao factionDao = new FactionDao(commandManager.returnConnect());
+
         // Check if the player already has a faction
         if (factionDao.isPlayerInFaction(playerUUID)) {
             player.sendMessage("You are already in a faction.");
         } else {
-            // Create a new faction
-            factionDao.createFaction(playerUUID, args[1]);
-            player.sendMessage("Faction created successfully!");
+            // Check if the faction name already exists
+            String factionName = args[0];
+            if (factionDao.isFactionNameTaken(factionName)) {
+                player.sendMessage("A faction with that name already exists.");
+            } else {
+                // Create a new faction
+                factionDao.createFaction(playerUUID, factionName);
+                player.sendMessage("Faction created successfully!");
+            }
         }
-
-        return;
     }
-
 }

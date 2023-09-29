@@ -27,6 +27,7 @@ public class FactionDao {
 
             // Execute the SQL statement to insert the new faction
             preparedStatement.executeUpdate();
+            addToFaction(ownerUUID, factionName);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -40,7 +41,8 @@ public class FactionDao {
             preparedStatement.setString(1, playerUUID.toString());
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                return resultSet.next(); // If the player is in a faction, there will be a result
+                // Check if there's at least one result and the faction_id is not null
+                return resultSet.next() && resultSet.getObject("faction_id") != null;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -49,6 +51,7 @@ public class FactionDao {
         // Return false by default if there's an error or the player is not in a faction
         return false;
     }
+
 
     public boolean isPlayerInFaction(UUID playerUUID, int factionId) {
         String checkMembershipSQL = "SELECT COUNT(*) AS member_count FROM player_data WHERE player_uuid = ? AND faction_id = ?";
@@ -279,6 +282,27 @@ public class FactionDao {
         }
     }
 
+    public boolean isFactionNameTaken(String factionName) {
+        String checkFactionNameSQL = "SELECT COUNT(*) AS name_count FROM faction WHERE name = ?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(checkFactionNameSQL)) {
+            preparedStatement.setString(1, factionName);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    int nameCount = resultSet.getInt("name_count");
+                    return nameCount > 0; // Faction name is taken if name_count is greater than 0
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        // Return false by default if there's an error or the faction name is not taken
+        return false;
+    }
+
+
     public void setTitleForPlayer(UUID playerUUID, String titleName) {
         // Get the title_id based on the title name
         int titleId = getTitleIdByName(titleName);
@@ -466,6 +490,24 @@ public class FactionDao {
             e.printStackTrace();
         }
     }
+    public void addToFaction(UUID playerUUID, String factionName) {
+        // Get the faction ID by name
+        int factionId = getFactionIdByName(factionName);
+
+        if (factionId != -1) {
+            // Update the player's faction ID in the player_data table
+            String updatePlayerFactionSQL = "UPDATE player_data SET faction_id = ? WHERE player_uuid = ?";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(updatePlayerFactionSQL)) {
+                preparedStatement.setInt(1, factionId);
+                preparedStatement.setString(2, playerUUID.toString());
+                preparedStatement.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 
     public void acceptInviteByFactionName(UUID inviteeUUID, String factionName) {
         // Get the faction ID based on the faction name

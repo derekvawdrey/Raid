@@ -1,6 +1,7 @@
 package me.amogus360.raid;
 
 import me.amogus360.raid.Commands.Faction.CreateFactionCommand;
+import me.amogus360.raid.Commands.Faction.FactionInfoCommand;
 import me.amogus360.raid.Commands.Money.AddMoneyCommand;
 import me.amogus360.raid.Commands.Money.MoneyCommand;
 import me.amogus360.raid.Commands.Money.SendMoneyCommand;
@@ -54,7 +55,7 @@ public class RaidCommandManager implements CommandExecutor {
         }else if(subcommand.equals("faction")){
             if(newArgs.length > 0){
                 if(newArgs[0].equals("create")) new CreateFactionCommand(plugin,"/raid faction create [faction_name]", factionDao).execute(sender,removeOneArg(newArgs),this);
-                if(newArgs[0].equals("info")) new CreateFactionCommand(plugin,"/raid faction info", factionDao).execute(sender,removeOneArg(newArgs),this);
+                if(newArgs[0].equals("info")) new FactionInfoCommand(plugin,"/raid faction info", factionDao).execute(sender,removeOneArg(newArgs),this);
             }else{
                 // Send a help message containing all usages
             }
