@@ -43,8 +43,14 @@ public class CreateFactionCommand extends RaidCommand {
                 MessageManager.sendMessage(player,"A faction with that name already exists.");
             } else {
                 // Create a new faction
-                factionDao.createFaction(playerUUID, factionName);
-                MessageManager.sendMessage(player,"Faction created successfully!");
+                if(!factionDao.nearbyClaimedArea(player.getLocation(),32)) {
+                    int factionId = factionDao.createFaction(playerUUID, factionName);
+                    factionDao.addToFaction(playerUUID,factionName);
+                    factionDao.claimLand(factionId,player.getLocation());
+                    MessageManager.sendMessage(player, "Faction created successfully!");
+                }else{
+                    MessageManager.sendMessage(player, "You can't create a faction within or near another faction");
+                }
             }
         }
     }

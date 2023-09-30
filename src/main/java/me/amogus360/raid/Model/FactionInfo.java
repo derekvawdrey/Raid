@@ -5,9 +5,9 @@ import java.util.UUID;
 public class FactionInfo {
     private int factionId;
     private String factionName;
-    private UUID factionOwnerUUID;
+    private int factionOwnerUUID;
 
-    public FactionInfo(int factionId, String factionName, UUID factionOwnerUUID) {
+    public FactionInfo(int factionId, String factionName, int factionOwnerUUID) {
         this.factionId = factionId;
         this.factionName = factionName;
         this.factionOwnerUUID = factionOwnerUUID;
@@ -21,7 +21,7 @@ public class FactionInfo {
         return factionName;
     }
 
-    public UUID getFactionOwnerUUID() {
+    public int getFactionOwnerUUID() {
         return factionOwnerUUID;
     }
 

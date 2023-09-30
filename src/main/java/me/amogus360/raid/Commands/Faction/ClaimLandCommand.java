@@ -3,6 +3,7 @@ package me.amogus360.raid.Commands.Faction;
 import me.amogus360.raid.Commands.RaidCommand;
 import me.amogus360.raid.DAO.FactionDao;
 import me.amogus360.raid.MessageManager;
+import me.amogus360.raid.Model.LandClaim;
 import me.amogus360.raid.RaidCommandManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -42,12 +43,12 @@ public class ClaimLandCommand extends RaidCommand {
         // Get the location where the player wants to claim land (you need to implement this part)
 
         // Check for overlap with other factions' claims within 64 blocks (you need to implement this part)
-        if (factionDao.hasOverlapWithOtherFactions(factionId,player.getLocation(),16)) {
+        if (factionDao.hasOverlapWithOtherFactions(factionId,player.getLocation(),LandClaim.size*4)) {
             MessageManager.sendMessage(player,"Land claim failed due to overlap with other factions.");
             return;
         }
 
-        if (!factionDao.isWithinRadiusOfSameFactionClaim(factionId,player.getLocation(),8)) {
+        if (!factionDao.isWithinRadiusOfSameFactionClaim(factionId,player.getLocation(), LandClaim.size)) {
             MessageManager.sendMessage(player,"Land claim failed due to insufficient proximity to an existing claim.");
             return;
         }

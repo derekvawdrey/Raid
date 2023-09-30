@@ -10,7 +10,7 @@ public class MessageManager {
     public static void sendMessage(CommandSender sender, String message) {
         String prefix = ChatColor.DARK_RED + "[" + ChatColor.GOLD + "Raid" + ChatColor.DARK_RED + "]" + ChatColor.RESET;
         String styledMessage = ChatColor.YELLOW + ">> " + ChatColor.WHITE + message + ChatColor.YELLOW + " <<";
-        MessageManager.sendMessage(sender,prefix + " " + styledMessage);
+        sender.sendMessage(prefix + " " + styledMessage);
     }
 
     // Method to send a prefixed message to a Player

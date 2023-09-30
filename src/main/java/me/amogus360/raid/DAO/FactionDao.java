@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
+
 public class FactionDao {
 
     private final Connection connection;
@@ -15,23 +17,37 @@ public class FactionDao {
         this.connection = connection;
     }
 
-    public void createFaction(UUID ownerUUID, String factionName) {
+    public int createFaction(UUID ownerUUID, String factionName) {
         String insertFactionSQL = "INSERT INTO faction (name, owner_id) VALUES (?, ?)";
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement(insertFactionSQL)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(insertFactionSQL, Statement.RETURN_GENERATED_KEYS)) {
             // Set the faction name
             preparedStatement.setString(1, factionName);
 
             // Set the owner's UUID
-            preparedStatement.setString(2, ownerUUID.toString());
+            PlayerAccountDao playerAccountDao = new PlayerAccountDao(this.connection);
+            preparedStatement.setInt(2, playerAccountDao.getPlayerIdByUUID(ownerUUID));
 
-            // Execute the SQL statement to insert the new faction
-            preparedStatement.executeUpdate();
-            addToFaction(ownerUUID, factionName);
+            // Execute the SQL statement to insert the new faction and retrieve the generated keys
+            int affectedRows = preparedStatement.executeUpdate();
+
+            if (affectedRows == 0) {
+                throw new SQLException("Creating faction failed, no rows affected.");
+            }
+
+            try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    return generatedKeys.getInt(1); // Return the generated faction ID
+                } else {
+                    throw new SQLException("Creating faction failed, no ID obtained.");
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
+            return -1;
         }
     }
+
 
 
     public boolean isPlayerInFaction(UUID playerUUID) {
@@ -750,23 +766,91 @@ public class FactionDao {
         return false;
     }
 
+    public boolean nearbyClaimedArea(Location location, int radius) {
+        // Calculate the boundaries of the claim
+        int x = (int) location.getX();
+        int z = (int) location.getZ();
+        int minX = x - radius;
+        int maxX = x + radius;
+        int minZ = z - radius;
+        int maxZ = z + radius;
+
+        String querySQL = "SELECT COUNT(*) AS overlap_count " +
+                "FROM land_claims " +
+                "WHERE x BETWEEN ? AND ? " +
+                "AND z BETWEEN ? AND ?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(querySQL)) {
+            preparedStatement.setInt(1, minX);
+            preparedStatement.setInt(2, maxX);
+            preparedStatement.setInt(3, minZ);
+            preparedStatement.setInt(4, maxZ);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    int overlapCount = resultSet.getInt("overlap_count");
+                    return overlapCount > 0;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public List<LandClaim> getLandClaimsWithFactionInRadius(Location centerLocation, int radius) {
+        List<LandClaim> landClaims = new ArrayList<>();
+        String getClaimsSQL = "SELECT lc.id AS claim_id, lc.x, lc.z, f.id AS faction_id, f.name AS faction_name " +
+                "FROM land_claims lc " +
+                "INNER JOIN faction f ON lc.faction_id = f.id " +
+                "WHERE lc.x BETWEEN ? AND ? AND lc.z BETWEEN ? AND ?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getClaimsSQL)) {
+            preparedStatement.setInt(1, centerLocation.getBlockX() - radius);
+            preparedStatement.setInt(2, centerLocation.getBlockX() + radius);
+            preparedStatement.setInt(3, centerLocation.getBlockZ() - radius);
+            preparedStatement.setInt(4, centerLocation.getBlockZ() + radius);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    int claimId = resultSet.getInt("claim_id");
+                    int x = resultSet.getInt("x");
+                    int z = resultSet.getInt("z");
+                    int factionId = resultSet.getInt("faction_id");
+                    String factionName = resultSet.getString("faction_name");
+
+                    LandClaim landClaimInfo = new LandClaim(claimId,factionId,factionName,x,z);
+                    landClaims.add(landClaimInfo);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return landClaims;
+    }
 
 
     public List<LandClaim> getLandClaimsByFactionId(int factionId) {
         List<LandClaim> landClaims = new ArrayList<>();
-        String getClaimsSQL = "SELECT id, x, z FROM land_claims WHERE faction_id = ?";
+        String getClaimsSQL = "SELECT lc.id AS claim_id, lc.x, lc.z, f.name AS faction_name " +
+                "FROM land_claims lc " +
+                "INNER JOIN faction f ON lc.faction_id = f.id " +
+                "WHERE lc.faction_id = ?";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(getClaimsSQL)) {
             preparedStatement.setInt(1, factionId);
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
-                    int claimId = resultSet.getInt("id");
+                    int claimId = resultSet.getInt("claim_id");
                     int x = resultSet.getInt("x");
                     int z = resultSet.getInt("z");
+                    String factionName = resultSet.getString("faction_name");
 
                     // Create a LandClaim object and add it to the landClaims list
-                    LandClaim landClaim = new LandClaim(claimId, factionId, x, z);
+                    LandClaim landClaim = new LandClaim(claimId, factionId, factionName, x, z);
                     landClaims.add(landClaim);
                 }
             }
@@ -780,7 +864,9 @@ public class FactionDao {
     public List<LandClaim> checkNearbyClaims(Location centerLocation, int radius) {
         List<LandClaim> nearbyClaims = new ArrayList<>();
 
-        String retrieveClaimsSQL = "SELECT id, faction_id, x, z FROM land_claims " +
+        String retrieveClaimsSQL = "SELECT lc.id AS claim_id, lc.faction_id, lc.x, lc.z, f.name AS faction_name " +
+                "FROM land_claims lc " +
+                "INNER JOIN faction f ON lc.faction_id = f.id " +
                 "WHERE " +
                 "  ABS(x - ?) <= ? AND " +
                 "  ABS(z - ?) <= ?";
@@ -793,13 +879,14 @@ public class FactionDao {
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
-                    int claimId = resultSet.getInt("id");
+                    int claimId = resultSet.getInt("claim_id");
                     int factionId = resultSet.getInt("faction_id");
                     int x = resultSet.getInt("x");
                     int z = resultSet.getInt("z");
+                    String factionName = resultSet.getString("faction_name");
 
                     // Create a LandClaim object and add it to the nearbyClaims list
-                    LandClaim landClaim = new LandClaim(claimId, factionId, x, z);
+                    LandClaim landClaim = new LandClaim(claimId, factionId, factionName, x, z);
                     nearbyClaims.add(landClaim);
                 }
             }
@@ -809,6 +896,7 @@ public class FactionDao {
 
         return nearbyClaims;
     }
+
 
 
 
@@ -844,8 +932,10 @@ public class FactionDao {
         // Update the owner UUID in the faction table
         String updateOwnerSQL = "UPDATE faction SET owner_id = ? WHERE id = ?";
 
+        PlayerAccountDao playerAccountDao = new PlayerAccountDao(this.connection);
+
         try (PreparedStatement preparedStatement = connection.prepareStatement(updateOwnerSQL)) {
-            preparedStatement.setString(1, newOwnerUUID.toString());
+            preparedStatement.setInt(1, playerAccountDao.getPlayerIdByUUID(newOwnerUUID));
             preparedStatement.setInt(2, factionId);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
@@ -866,10 +956,9 @@ public class FactionDao {
                 if (resultSet.next()) {
                     int factionId = resultSet.getInt("faction_id");
                     String factionName = resultSet.getString("faction_name");
-                    String factionOwnerUUIDString = resultSet.getString("faction_owner");
-                    UUID factionOwnerUUID = UUID.fromString(factionOwnerUUIDString);
+                    int factionOwnerId = resultSet.getInt("faction_owner");
 
-                    return new FactionInfo(factionId, factionName, factionOwnerUUID);
+                    return new FactionInfo(factionId, factionName, factionOwnerId);
                 }
             }
         } catch (SQLException e) {
