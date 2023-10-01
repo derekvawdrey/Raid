@@ -1,6 +1,9 @@
 package me.amogus360.raid;
 
+import com.google.common.collect.Table;
+import me.amogus360.raid.EventHandlers.LandClaimBlockEventHandler;
 import me.amogus360.raid.EventHandlers.PlayerJoinEventHandler;
+import me.amogus360.raid.Tasks.ParticleCleanupTask;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -14,6 +17,8 @@ import java.sql.SQLException;
 public class Raid extends JavaPlugin implements Listener {
     private Connection connection;
     private static String databaseName = "raid.db";
+    private DataAccessManager dataAccessManager;
+    private TableManager tableManager;
 
     @Override
     public void onEnable() {
@@ -23,18 +28,23 @@ public class Raid extends JavaPlugin implements Listener {
         TableManager tableManager = new TableManager(connection);
         tableManager.createTables();
 
-        initCommands(tableManager);
-        initEvents(tableManager);
+        dataAccessManager = new DataAccessManager(connection);
+
+        initCommands();
+        initEvents();
+
+        ParticleCleanupTask.startTask(this);
     }
 
-    private void initCommands(TableManager tableManager){
-        getCommand("raid").setExecutor(new RaidCommandManager(this, connection));
+    private void initCommands(){
+        getCommand("raid").setExecutor(new RaidCommandManager(this, this.dataAccessManager));
     }
 
-    private void initEvents(TableManager tableManager){
+    private void initEvents(){
         // Register the event handler
         PluginManager pluginManager = getServer().getPluginManager();
-        pluginManager.registerEvents(new PlayerJoinEventHandler(tableManager), this);
+        pluginManager.registerEvents(new PlayerJoinEventHandler(this.tableManager), this);
+        pluginManager.registerEvents(new LandClaimBlockEventHandler(this.dataAccessManager), this);
     }
 
     @Override

@@ -24,10 +24,10 @@ public class MoneyCommand extends RaidCommand {
         Player player = (Player) sender;
 
         // Example: Get the player's balance
-        PlayerAccountDao pao = new PlayerAccountDao(commandManager.returnConnect());
+
         int balance = 0;
         try {
-            balance = pao.getBalance(player.getUniqueId());
+            balance = commandManager.getPlayerAccountDao().getBalance(player.getUniqueId());
         } catch(Exception e){
 
         }

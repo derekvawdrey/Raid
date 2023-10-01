@@ -3,6 +3,7 @@ package me.amogus360.raid;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 public class MessageManager {
 
@@ -17,5 +18,9 @@ public class MessageManager {
     public static void sendMessage(Player player, String message) {
         sendMessage((CommandSender) player, message);
     }
-
+    public static void sendGlobalMessage(Plugin plugin, String message){
+        for(Player player: plugin.getServer().getOnlinePlayers()){
+            sendMessage(player, message);
+        }
+    }
 }

@@ -1,44 +1,31 @@
 package me.amogus360.raid.Model;
 
 public class LandClaim {
-    // In a 7x7 radius around the center block
-    public static int size = 7;
-    private int id;
+    private int claimId;
     private int factionId;
-    private int x;
-    private int z;
     private String factionName;
+    private LandClaimLocation location; // Use LandClaimLocation instead of Location
 
-    public LandClaim(int id, int factionId, String factionName, int x, int z) {
-        this.id = id;
+    public LandClaim(int claimId, int factionId, String factionName, LandClaimLocation location) {
+        this.claimId = claimId;
         this.factionId = factionId;
-        this.x = x;
-        this.z = z;
+        this.factionName = factionName;
+        this.location = location;
     }
 
-    public int getId() {
-        return id;
+    public int getClaimId() {
+        return this.claimId;
     }
 
     public int getFactionId() {
-        return factionId;
+        return this.factionId;
     }
 
-    public int getX() {
-        return x;
+    public String getFactionString() {
+        return this.factionName;
     }
 
-    public int getZ() {
-        return z;
-    }
-
-    @Override
-    public String toString() {
-        return "LandClaim{" +
-                "id=" + id +
-                ", factionId=" + factionId +
-                ", x=" + x +
-                ", z=" + z +
-                '}';
+    public LandClaimLocation getLocation() {
+        return location;
     }
 }

@@ -11,11 +11,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.UUID;
 
 public class CreateFactionCommand extends RaidCommand {
-    private final FactionDao factionDao;
 
-    public CreateFactionCommand(JavaPlugin plugin, String usage, FactionDao factionDataAccess) {
+    public CreateFactionCommand(JavaPlugin plugin, String usage) {
         super(plugin, usage);
-        this.factionDao = factionDataAccess;
     }
 
     @Override
@@ -34,19 +32,19 @@ public class CreateFactionCommand extends RaidCommand {
         UUID playerUUID = player.getUniqueId();
 
         // Check if the player already has a faction
-        if (factionDao.isPlayerInFaction(playerUUID)) {
+        if (commandManager.getFactionDao().isPlayerInFaction(playerUUID)) {
             MessageManager.sendMessage(player,"You are already in a faction.");
         } else {
             // Check if the faction name already exists
             String factionName = args[0];
-            if (factionDao.isFactionNameTaken(factionName)) {
+            if (commandManager.getFactionDao().isFactionNameTaken(factionName)) {
                 MessageManager.sendMessage(player,"A faction with that name already exists.");
             } else {
                 // Create a new faction
-                if(!factionDao.nearbyClaimedArea(player.getLocation(),32)) {
-                    int factionId = factionDao.createFaction(playerUUID, factionName);
-                    factionDao.addToFaction(playerUUID,factionName);
-                    factionDao.claimLand(factionId,player.getLocation());
+                if(!commandManager.getLandClaimDao().nearbyClaimedArea(player.getLocation(),6)) {
+                    int factionId = commandManager.getFactionDao().createFaction(playerUUID, factionName);
+                    commandManager.getFactionDao().addToFaction(playerUUID,factionName);
+                    commandManager.getLandClaimDao().claimLand(factionId,player.getLocation());
                     MessageManager.sendMessage(player, "Faction created successfully!");
                 }else{
                     MessageManager.sendMessage(player, "You can't create a faction within or near another faction");

@@ -12,13 +12,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.UUID;
 
 public class DepositFactionCommand extends RaidCommand {
-    private final FactionDao factionDao;
-    private final PlayerAccountDao playerDao;
 
-    public DepositFactionCommand(JavaPlugin plugin, String usage, FactionDao factionDataAccess, PlayerAccountDao playerDao) {
+    public DepositFactionCommand(JavaPlugin plugin, String usage) {
         super(plugin, usage);
-        this.factionDao = factionDataAccess;
-        this.playerDao = playerDao;
     }
 
     @Override
@@ -32,13 +28,13 @@ public class DepositFactionCommand extends RaidCommand {
         UUID playerUUID = player.getUniqueId();
 
         // Check if the player is in a faction
-        if (!factionDao.isPlayerInFaction(playerUUID)) {
+        if (!commandManager.getFactionDao().isPlayerInFaction(playerUUID)) {
             MessageManager.sendMessage(player,"You are not currently in a faction.");
             return;
         }
 
         // Check if the player is the owner of the faction
-        if (!factionDao.isPlayerFactionOwner(playerUUID)) {
+        if (!commandManager.getFactionDao().isPlayerFactionOwner(playerUUID)) {
             MessageManager.sendMessage(player,"Only the faction owner can deposit money.");
             return;
         }
@@ -63,7 +59,7 @@ public class DepositFactionCommand extends RaidCommand {
         }
 
         try {
-            int playerBalance = this.playerDao.getBalance(playerUUID);
+            int playerBalance = commandManager.getPlayerAccountDao().getBalance(playerUUID);
             if (playerBalance < amount) {
                 MessageManager.sendMessage(player,"You do not have enough money to deposit.");
                 return;
@@ -73,10 +69,10 @@ public class DepositFactionCommand extends RaidCommand {
             return;
         }
 
-        String factionName = factionDao.getFactionNameByPlayerUUID(playerUUID);
+        String factionName = commandManager.getFactionDao().getFactionNameByPlayerUUID(playerUUID);
 
         // Deposit money into the faction bank
-        factionDao.depositMoneyToFaction(playerUUID, factionName, amount);
+        commandManager.getFactionDao().depositMoneyToFaction(playerUUID, factionName, amount);
         MessageManager.sendMessage(player,"You have deposited " + amount + " money into your faction's bank.");
     }
 }

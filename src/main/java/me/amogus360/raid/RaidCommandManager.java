@@ -3,10 +3,12 @@ package me.amogus360.raid;
 import me.amogus360.raid.Commands.Faction.CreateFactionCommand;
 import me.amogus360.raid.Commands.Faction.FactionInfoCommand;
 import me.amogus360.raid.Commands.Faction.ClaimLandCommand;
+import me.amogus360.raid.Commands.Faction.ShowLandClaimsCommand;
 import me.amogus360.raid.Commands.Money.AddMoneyCommand;
 import me.amogus360.raid.Commands.Money.MoneyCommand;
 import me.amogus360.raid.Commands.Money.SendMoneyCommand;
 import me.amogus360.raid.DAO.FactionDao;
+import me.amogus360.raid.DAO.LandClaimDao;
 import me.amogus360.raid.DAO.PlayerAccountDao;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -19,21 +21,13 @@ import java.sql.Connection;
 public class RaidCommandManager implements CommandExecutor {
 
     private final JavaPlugin plugin;
-    private final Connection connection;
+    private final DataAccessManager dataAccessManager;
 
-    private final FactionDao factionDao;
-    private final PlayerAccountDao playerAccountDao;
-
-    public RaidCommandManager(JavaPlugin plugin, Connection connection) {
+    public RaidCommandManager(JavaPlugin plugin, DataAccessManager dataAccessManager) {
         this.plugin = plugin;
-        this.connection = connection;
-        this.factionDao = new FactionDao(connection);
-        this.playerAccountDao = new PlayerAccountDao(connection);
+        this.dataAccessManager = dataAccessManager;
     }
 
-    public Connection returnConnect(){
-        return this.connection;
-    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -55,11 +49,12 @@ public class RaidCommandManager implements CommandExecutor {
 
         }else if(subcommand.equals("faction")){
             if(newArgs.length > 0){
-                if(newArgs[0].equals("create")) new CreateFactionCommand(plugin,"/raid faction create [faction_name]", factionDao).execute(sender,removeOneArg(newArgs),this);
-                else if(newArgs[0].equals("info")) new FactionInfoCommand(plugin,"/raid faction info", factionDao).execute(sender,removeOneArg(newArgs),this);
+                if(newArgs[0].equals("create")) new CreateFactionCommand(plugin,"/raid faction create [faction_name]").execute(sender,removeOneArg(newArgs),this);
+                else if(newArgs[0].equals("info")) new FactionInfoCommand(plugin,"/raid faction info").execute(sender,removeOneArg(newArgs),this);
                 else if(newArgs[0].equals("land")){
                     String[] landArgs = removeOneArg(newArgs);
-                    if(landArgs[0].equals("claim")) new ClaimLandCommand(plugin, "/raid faction land claim", factionDao).execute(sender,removeOneArg(newArgs),this);
+                    if(landArgs[0].equals("claim")) new ClaimLandCommand(plugin, "/raid faction land claim").execute(sender,removeOneArg(newArgs),this);
+                    else if(landArgs[0].equals("show")) new ShowLandClaimsCommand(plugin, "/raid faction show").execute(sender,removeOneArg(newArgs),this);
                 }
             }else{
                 // Send a help message containing all usages
@@ -77,5 +72,17 @@ public class RaidCommandManager implements CommandExecutor {
         String[] newArgs = new String[args.length - 1];
         System.arraycopy(args, 1, newArgs, 0, args.length - 1);
         return newArgs;
+    }
+
+    public PlayerAccountDao getPlayerAccountDao(){
+        return this.dataAccessManager.getPlayerAccountDao();
+    }
+
+    public FactionDao getFactionDao(){
+        return this.dataAccessManager.getFactionDao();
+    }
+
+    public LandClaimDao getLandClaimDao(){
+        return this.dataAccessManager.getLandClaimDao();
     }
 }

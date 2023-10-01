@@ -143,8 +143,10 @@ public class TableManager {
                     String createTableSQL = "CREATE TABLE land_claims (" +
                             "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                             "faction_id INTEGER NOT NULL," +
-                            "x INT NOT NULL," +
-                            "z INT NOT NULL," +
+                            "chunk_x INT NOT NULL," +
+                            "chunk_y INT NOT NULL," +
+                            "chunk_z INT NOT NULL," +
+                            "chunk_world TEXT NOT NULL, " +
                             "FOREIGN KEY (faction_id) REFERENCES faction (id)" +
                             ");";
 

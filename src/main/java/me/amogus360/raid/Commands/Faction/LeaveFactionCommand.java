@@ -11,10 +11,8 @@ import java.util.UUID;
 
 public class LeaveFactionCommand extends RaidCommand {
 
-    private final FactionDao factionDao;
-    public LeaveFactionCommand(JavaPlugin plugin, String usage, FactionDao factionDataAccess) {
+    public LeaveFactionCommand(JavaPlugin plugin, String usage) {
         super(plugin, usage);
-        this.factionDao = factionDataAccess;
     }
 
     @Override
@@ -30,13 +28,13 @@ public class LeaveFactionCommand extends RaidCommand {
         UUID playerUUID = player.getUniqueId();
 
         // Check if the player is not in a faction
-        if (!factionDao.isPlayerInFaction(playerUUID)) {
+        if (!commandManager.getFactionDao().isPlayerInFaction(playerUUID)) {
             MessageManager.sendMessage(player,"You are not currently in a faction.");
             return;
         }
 
         // Remove the player from their current faction
-        factionDao.removePlayerFromFaction(playerUUID);
+        commandManager.getFactionDao().removePlayerFromFaction(playerUUID);
         MessageManager.sendMessage(player,"You have left your faction.");
     }
 }

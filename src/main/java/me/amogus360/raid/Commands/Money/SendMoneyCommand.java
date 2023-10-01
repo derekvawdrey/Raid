@@ -57,7 +57,7 @@ public class SendMoneyCommand extends RaidCommand {
 
         // Use the transferMoney method to perform the money transfer
         try {
-            PlayerAccountDao playerAccountDao = new PlayerAccountDao(commandManager.returnConnect());
+            PlayerAccountDao playerAccountDao = commandManager.getPlayerAccountDao();
             if(playerAccountDao.transferMoney(senderUUID, recipientUUID, amount)){
                 MessageManager.sendMessage(sender,"Transferred " + amount + " money to " + recipient.getName() + ".");
                 MessageManager.sendMessage(recipient,sender.getName() + " sent you " + amount + " money.");

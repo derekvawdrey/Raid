@@ -35,7 +35,7 @@ public class AddMoneyCommand extends RaidCommand {
         Player targetPlayer = plugin.getServer().getPlayer(playerName);
         UUID playerUUID = targetPlayer.getUniqueId();
         try {
-            new PlayerAccountDao(commandManager.returnConnect()).updateBalance(playerUUID,amount);
+            commandManager.getPlayerAccountDao().updateBalance(playerUUID,amount);
         } catch(Exception e) {
 
         }
