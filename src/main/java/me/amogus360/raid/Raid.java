@@ -1,9 +1,8 @@
 package me.amogus360.raid;
 
-import com.google.common.collect.Table;
 import me.amogus360.raid.EventHandlers.LandClaimBlockEventHandler;
 import me.amogus360.raid.EventHandlers.PlayerJoinEventHandler;
-import me.amogus360.raid.Tasks.ParticleCleanupTask;
+import me.amogus360.raid.Tasks.BlockReplacementTask;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -33,7 +32,7 @@ public class Raid extends JavaPlugin implements Listener {
         initCommands();
         initEvents();
 
-        ParticleCleanupTask.startTask(this);
+        BlockReplacementTask.startTask(this, this.dataAccessManager);
     }
 
     private void initCommands(){
@@ -43,7 +42,7 @@ public class Raid extends JavaPlugin implements Listener {
     private void initEvents(){
         // Register the event handler
         PluginManager pluginManager = getServer().getPluginManager();
-        pluginManager.registerEvents(new PlayerJoinEventHandler(this.tableManager), this);
+        pluginManager.registerEvents(new PlayerJoinEventHandler(this.dataAccessManager), this);
         pluginManager.registerEvents(new LandClaimBlockEventHandler(this.dataAccessManager), this);
     }
 

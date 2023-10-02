@@ -24,7 +24,6 @@ public class ShowLandClaimsCommand extends RaidCommand {
     public ShowLandClaimsCommand(JavaPlugin plugin, String usage) {
         super(plugin, usage);
     }
-
     @Override
     public void execute(CommandSender sender, String[] args, RaidCommandManager commandManager) {
         if (!(sender instanceof Player)) {
@@ -35,7 +34,7 @@ public class ShowLandClaimsCommand extends RaidCommand {
         List<LandClaim> claimedChunks = commandManager.getLandClaimDao().getNearbyClaimChunks(player.getLocation(), 12);
 
         int landClaimSize = LandClaimChunkUtilities.landClaimSize;
-        int yRange = 3; // The range around the player's Y position
+        int yRange = 4; // The range around the player's Y position
 
         // Iterate through claimed chunks and spawn particles at their edges
         for (LandClaim claimedChunk : claimedChunks) {
@@ -63,7 +62,7 @@ public class ShowLandClaimsCommand extends RaidCommand {
                             double particleX = x + 0.5;
                             double particleY = y + 0.5;
                             double particleZ = z + 0.5;
-                            chunkWorld.spawnParticle(Particle.VILLAGER_HAPPY, particleX, particleY, particleZ, 1, 0, 0, 0, 0.5);
+                            player.spawnParticle(Particle.VILLAGER_HAPPY, particleX, particleY, particleZ, 1, 0, 0, 0, 0.5);
                         }
                     }
                 }
@@ -74,7 +73,7 @@ public class ShowLandClaimsCommand extends RaidCommand {
             double particleX = chunk_x * landClaimSize + 0.5;
             double particleY = highestY + 0.5;
             double particleZ = chunk_z * landClaimSize + 0.5;
-            chunkWorld.spawnParticle(Particle.VILLAGER_HAPPY, particleX, particleY, particleZ, 1, 0, 0, 0, 0.5);
+            player.spawnParticle(Particle.HEART, particleX, particleY, particleZ, 1, 0, 0, 0, 0.5);
         }
     }
 

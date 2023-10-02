@@ -41,6 +41,7 @@ public class CreateFactionCommand extends RaidCommand {
                 MessageManager.sendMessage(player,"A faction with that name already exists.");
             } else {
                 // Create a new faction
+                //TODO: Make it so you can't make a faction right by another faction, right now it doesnt work
                 if(!commandManager.getLandClaimDao().nearbyClaimedArea(player.getLocation(),6)) {
                     int factionId = commandManager.getFactionDao().createFaction(playerUUID, factionName);
                     commandManager.getFactionDao().addToFaction(playerUUID,factionName);

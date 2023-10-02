@@ -26,6 +26,7 @@ public class TableManager {
         createTitleTable();
         createFactionInvitesTable();
         createLandClaimsTable();
+        createBlockInfoTable();
     }
 
     private boolean tableExists(String tableName) throws SQLException {
@@ -73,6 +74,26 @@ public class TableManager {
             e.printStackTrace();
         }
     }
+
+    private void createBlockInfoTable() {
+        try {
+            if (!tableExists("block_info")) {
+                try (Statement statement = connection.createStatement()) {
+                    String createTableSQL = "CREATE TABLE block_info (" +
+                            "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                            "block_info_json TEXT NOT NULL," +
+                            "time_destroyed DATETIME," +
+                            "time_to_replace DATETIME" +
+                            ");";
+
+                    statement.executeUpdate(createTableSQL);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private void createFactionTable() {
         try {

@@ -300,12 +300,12 @@ public class LandClaimDao {
         // Calculate the boundaries of the claim
 
         Location chunkCoordinate = LandClaimChunkUtilities.convertToChunkCoordinate(location);
-        int chunk_x = (int) location.getX();
-        int chunk_z = (int) location.getZ();
-        int minchunk_X= chunk_x - radius;
-        int maxchunk_X= chunk_x + radius;
-        int minchunk_Z= chunk_z - radius;
-        int maxchunk_Z= chunk_z + radius;
+        int chunk_x = (int) chunkCoordinate.getX();
+        int chunk_z = (int) chunkCoordinate.getZ();
+        int minchunk_X = chunk_x - radius;
+        int maxchunk_X = chunk_x + radius;
+        int minchunk_Z = chunk_z - radius;
+        int maxchunk_Z = chunk_z + radius;
 
         String querySQL = "SELECT COUNT(*) AS overlap_count " +
                 "FROM land_claims " +

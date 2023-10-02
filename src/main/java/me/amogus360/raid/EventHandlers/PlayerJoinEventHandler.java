@@ -1,6 +1,7 @@
 package me.amogus360.raid.EventHandlers;
 
 import me.amogus360.raid.DAO.PlayerAccountDao;
+import me.amogus360.raid.DataAccessManager;
 import me.amogus360.raid.MessageManager;
 import me.amogus360.raid.TableManager;
 import org.bukkit.entity.Player;
@@ -13,10 +14,10 @@ import java.util.UUID;
 
 public class PlayerJoinEventHandler implements Listener {
 
-    private final TableManager tableManager; // Assuming you have a TableManager instance
+    private final DataAccessManager dataAccessManager; // Assuming you have a TableManager instance
 
-    public PlayerJoinEventHandler(TableManager tableManager) {
-        this.tableManager = tableManager;
+    public PlayerJoinEventHandler(DataAccessManager dataAccessManager) {
+        this.dataAccessManager = dataAccessManager;
     }
 
     @EventHandler
@@ -29,7 +30,7 @@ public class PlayerJoinEventHandler implements Listener {
         UUID playerUUID = player.getUniqueId();
 
         // Insert the player's username and UUID into the database
-        PlayerAccountDao pad = new PlayerAccountDao(tableManager.getConnection());
+        PlayerAccountDao pad = dataAccessManager.getPlayerAccountDao();
         pad.createAccount(playerUUID, playerName);
 
         // Perform any other actions you want
