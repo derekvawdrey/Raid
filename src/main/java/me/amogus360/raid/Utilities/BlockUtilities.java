@@ -4,9 +4,12 @@ import me.amogus360.raid.Model.Block.BlockInfo;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Barrel;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
+import org.bukkit.block.ShulkerBox;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -28,17 +31,17 @@ public class BlockUtilities {
             blockInfo.setBlockData(block.getBlockData().getAsString());
         }
 
-        // Chest contents (if the block is a chest)
-        if (block.getState() instanceof Chest) {
-            Chest chest = (Chest) block.getState();
+        if (block.getState() instanceof InventoryHolder) {
+            InventoryHolder holder = (InventoryHolder) block.getState();
             blockInfo.setChestContents(new ArrayList<>());
 
-            for (ItemStack item : chest.getInventory().getContents()) {
+            for (ItemStack item : holder.getInventory().getContents()) {
                 if (item != null && item.getType() != Material.AIR) {
                     blockInfo.getChestContents().add(item.clone());
                 }
             }
         }
+
 
         return blockInfo;
     }
@@ -47,7 +50,7 @@ public class BlockUtilities {
         int x = blockInfo.getX();
         int y = blockInfo.getY();
         int z = blockInfo.getZ();
-
+        
 
         Block block = Bukkit.getWorld(blockInfo.getWorldName()).getBlockAt(x, y, z);
         Material material = Material.getMaterial(blockInfo.getMaterial());
@@ -68,17 +71,18 @@ public class BlockUtilities {
                 }
             }
 
-            if (block.getState() instanceof Chest) {
-                Chest chest = (Chest) block.getState();
+            if (block.getState() instanceof InventoryHolder) {
+                InventoryHolder holder = (InventoryHolder) block.getState();
                 List<ItemStack> chestContents = blockInfo.getChestContents();
 
                 if (chestContents != null) {
                     System.out.println("Setting chest contents: " + chestContents);
                     for (int i = 0; i < chestContents.size(); i++) {
-                        chest.getInventory().setItem(i, chestContents.get(i));
+                        holder.getInventory().setItem(i, chestContents.get(i));
                     }
                 }
             }
+
         }
     }
 

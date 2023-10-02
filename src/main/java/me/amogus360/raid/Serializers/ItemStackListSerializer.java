@@ -5,6 +5,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
+import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
@@ -38,6 +40,15 @@ public class ItemStackListSerializer implements JsonSerializer<List<ItemStack>>,
                     enchantmentsObject.addProperty(enchantment.getKey().getKey(), meta.getEnchantLevel(enchantment));
                 }
                 jsonItemStack.add("enchants", enchantmentsObject);
+            }
+
+            if (meta instanceof EnchantmentStorageMeta) {
+                JsonObject enchantmentsObject = new JsonObject();
+                EnchantmentStorageMeta bookMeta = (EnchantmentStorageMeta) meta;
+                for (Enchantment enchantment : bookMeta.getStoredEnchants().keySet()) {
+                    enchantmentsObject.addProperty(enchantment.getKey().getKey(), bookMeta.getStoredEnchantLevel(enchantment));
+                }
+                jsonItemStack.add("stored_enchants", enchantmentsObject);
             }
 
 
@@ -74,6 +85,17 @@ public class ItemStackListSerializer implements JsonSerializer<List<ItemStack>>,
                             int level = enchantmentsObject.get(enchantmentKey).getAsInt();
                             if (enchantment != null) {
                                 meta.addEnchant(enchantment, level, true);
+                            }
+                        }
+                    }
+
+                    if (jsonItemStack.has("stored_enchants")) {
+                        JsonObject enchantmentsObject = jsonItemStack.getAsJsonObject("stored_enchants");
+                        for (String enchantmentKey : enchantmentsObject.keySet()) {
+                            Enchantment enchantment = Enchantment.getByKey(org.bukkit.NamespacedKey.minecraft(enchantmentKey));
+                            int level = enchantmentsObject.get(enchantmentKey).getAsInt();
+                            if (enchantment != null && meta instanceof EnchantmentStorageMeta) {
+                                ((EnchantmentStorageMeta)meta).addStoredEnchant(enchantment, level, true);
                             }
                         }
                     }

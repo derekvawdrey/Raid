@@ -111,7 +111,7 @@ public class LandClaimBlockEventHandler implements Listener {
                 boolean isBlockInsideLandClaim = dataAccessManager.getLandClaimDao().isClaimed(blockLocation);
 
                 if (isBlockInsideLandClaim) {
-                    if(block.getType() != Material.AIR) blocksToRegenerate.add(block);
+                    if(block.getType() != Material.AIR && block.getType() != Material.TNT) blocksToRegenerate.add(block);
                 }
             }
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
