@@ -48,13 +48,11 @@ public class BlockUtilities {
         int y = blockInfo.getY();
         int z = blockInfo.getZ();
 
-        System.out.println("Placing block at X=" + x + ", Y=" + y + ", Z=" + z);
 
         Block block = Bukkit.getWorld(blockInfo.getWorldName()).getBlockAt(x, y, z);
         Material material = Material.getMaterial(blockInfo.getMaterial());
 
         if (material != null) {
-            System.out.println("Setting block material to " + material);
 
             block.setType(material);
 
@@ -64,7 +62,6 @@ public class BlockUtilities {
                     BlockData blockData = Bukkit.createBlockData(blockInfo.getBlockData());
                     block.setBlockData(blockData, true);
 
-                    System.out.println("Setting block data: " + blockData.getAsString());
                 } catch (IllegalArgumentException e) {
                     // Handle invalid block data
                     e.printStackTrace();
