@@ -13,6 +13,8 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+
+// TODO: Fix enchatned books and books and all that.
 public class ItemStackListSerializer implements JsonSerializer<List<ItemStack>>, JsonDeserializer<List<ItemStack>> {
     @Override
     public JsonElement serialize(List<ItemStack> src, Type typeOfSrc, JsonSerializationContext context) {
@@ -37,6 +39,8 @@ public class ItemStackListSerializer implements JsonSerializer<List<ItemStack>>,
                 }
                 jsonItemStack.add("enchants", enchantmentsObject);
             }
+
+
 
             jsonArray.add(jsonItemStack);
         }
