@@ -5,6 +5,7 @@ import me.amogus360.raid.DataAccessManager;
 import me.amogus360.raid.MessageManager;
 import me.amogus360.raid.Model.Block.BlockInfo;
 import me.amogus360.raid.Utilities.BlockUtilities;
+import org.bukkit.World;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -12,6 +13,7 @@ import javax.xml.crypto.Data;
 import java.sql.Connection;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 
 public class BlockReplacementTask extends BukkitRunnable {
 
@@ -28,10 +30,7 @@ public class BlockReplacementTask extends BukkitRunnable {
 
         // Retrieve blocks that need to be replaced
         List<BlockInfo> blocksToReplace = dataAccessManager.getBlockInfoDao().getAndDeleteBlocksToReplace(currentTime);
-
-        for (BlockInfo blockInfo : blocksToReplace) {
-            BlockUtilities.placeBlock(blockInfo);
-        }
+        BlockUtilities.placeBlockArray(blocksToReplace);
         MessageManager.sendGlobalMessage(this.plugin, "Starting block replacement");
     }
 

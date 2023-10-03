@@ -1,7 +1,9 @@
 package me.amogus360.raid.Utilities;
 
+import me.amogus360.raid.BlockChanger.BlockChanger;
 import me.amogus360.raid.Model.Block.BlockInfo;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Barrel;
@@ -14,7 +16,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class BlockUtilities {
     public static BlockInfo convertBlockToBlockInfo(World world, int x, int y, int z, Block block) {
@@ -45,44 +49,77 @@ public class BlockUtilities {
 
         return blockInfo;
     }
+    public static void placeBlockArray(List<BlockInfo> blockInfoArray){
+        Map<String,World> worldMap = new HashMap<String,World>();
+        Map<BlockInfo, World> blockInfoToBlockMap = new HashMap<>();
+        // Here we will prevent loading worlds more than 1 time
+        for(BlockInfo blockInfo : blockInfoArray ){
+            // Make sure we aren't loading a world every time we deserialize a blockInfo block
 
-    public static void placeBlock(BlockInfo blockInfo) {
+                String worldName = blockInfo.getWorldName();
+                if(!worldMap.containsKey(worldName)) worldMap.put(worldName, Bukkit.getWorld(worldName));
+
+                placeBlock(blockInfo, worldMap.get(worldName));
+                if(blockInfo.getChestContents() != null && !blockInfo.getChestContents().isEmpty()) blockInfoToBlockMap.put(blockInfo,worldMap.get(worldName));
+        }
+
+        blockInfoToBlockMap.forEach((key, value) -> {
+            insertInventoryToBlock(key,value);
+        });
+    }
+
+
+    public static Block placeBlock(BlockInfo blockInfo, World world) {
         int x = blockInfo.getX();
         int y = blockInfo.getY();
         int z = blockInfo.getZ();
-        
 
-        Block block = Bukkit.getWorld(blockInfo.getWorldName()).getBlockAt(x, y, z);
+
+        Location blockLocation = new Location(world,x,y,z);
         Material material = Material.getMaterial(blockInfo.getMaterial());
+        material.createBlockData(blockInfo.getBlockData());
+        BlockChanger.setBlock(blockLocation, material);
 
-        if (material != null) {
+//
+//
+//
+//                if (material != null) {
+//
+//                    block.setType(material);
+//
+//                    if (blockInfo.getBlockData() != null) {
+//                        try {
+//                            // Parse the block data and set it using BlockData
+//                                BlockData blockData = Bukkit.createBlockData(blockInfo.getBlockData());
+//                            block.setBlockData(blockData, true);
+//
+//                        } catch (IllegalArgumentException e) {
+//                            // Handle invalid block data
+//                            e.printStackTrace();
+//                        }
+//                    }
+//
+//                    return block;
+//
+//                }
+        return null;
+    }
 
-            block.setType(material);
+    public static void insertInventoryToBlock(BlockInfo blockInfo, World world){
+        int x = blockInfo.getX();
+        int y = blockInfo.getY();
+        int z = blockInfo.getZ();
+        Block block = world.getBlockAt(x,y,z);
+        if (block.getState() instanceof InventoryHolder) {
+            InventoryHolder holder = (InventoryHolder) block.getState();
+            List<ItemStack> chestContents = blockInfo.getChestContents();
 
-            if (blockInfo.getBlockData() != null) {
-                try {
-                    // Parse the block data and set it using BlockData
-                    BlockData blockData = Bukkit.createBlockData(blockInfo.getBlockData());
-                    block.setBlockData(blockData, true);
-
-                } catch (IllegalArgumentException e) {
-                    // Handle invalid block data
-                    e.printStackTrace();
+            if (chestContents != null) {
+                System.out.println("Setting chest contents: " + chestContents);
+                for (int i = 0; i < chestContents.size(); i++) {
+                    holder.getInventory().setItem(i, chestContents.get(i));
                 }
             }
-
-            if (block.getState() instanceof InventoryHolder) {
-                InventoryHolder holder = (InventoryHolder) block.getState();
-                List<ItemStack> chestContents = blockInfo.getChestContents();
-
-                if (chestContents != null) {
-                    System.out.println("Setting chest contents: " + chestContents);
-                    for (int i = 0; i < chestContents.size(); i++) {
-                        holder.getInventory().setItem(i, chestContents.get(i));
-                    }
-                }
-            }
-
         }
     }
 
