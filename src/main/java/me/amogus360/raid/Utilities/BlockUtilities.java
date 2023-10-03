@@ -11,6 +11,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.block.ShulkerBox;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.entity.Item;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -52,6 +53,7 @@ public class BlockUtilities {
     public static void placeBlockArray(List<BlockInfo> blockInfoArray){
         Map<String,World> worldMap = new HashMap<String,World>();
         Map<BlockInfo, World> blockInfoToBlockMap = new HashMap<>();
+        System.out.println("Starting block place");
         // Here we will prevent loading worlds more than 1 time
         for(BlockInfo blockInfo : blockInfoArray ){
             // Make sure we aren't loading a world every time we deserialize a blockInfo block
@@ -69,7 +71,7 @@ public class BlockUtilities {
     }
 
 
-    public static Block placeBlock(BlockInfo blockInfo, World world) {
+    public static void placeBlock(BlockInfo blockInfo, World world) {
         int x = blockInfo.getX();
         int y = blockInfo.getY();
         int z = blockInfo.getZ();
@@ -77,32 +79,9 @@ public class BlockUtilities {
 
         Location blockLocation = new Location(world,x,y,z);
         Material material = Material.getMaterial(blockInfo.getMaterial());
-        material.createBlockData(blockInfo.getBlockData());
-        BlockChanger.setBlock(blockLocation, material);
-
-//
-//
-//
-//                if (material != null) {
-//
-//                    block.setType(material);
-//
-//                    if (blockInfo.getBlockData() != null) {
-//                        try {
-//                            // Parse the block data and set it using BlockData
-//                                BlockData blockData = Bukkit.createBlockData(blockInfo.getBlockData());
-//                            block.setBlockData(blockData, true);
-//
-//                        } catch (IllegalArgumentException e) {
-//                            // Handle invalid block data
-//                            e.printStackTrace();
-//                        }
-//                    }
-//
-//                    return block;
-//
-//                }
-        return null;
+        BlockChanger.setBlockAsynchronously(blockLocation, new ItemStack(material), false);
+        world.getBlockAt(x,y,z).setBlockData(Bukkit.createBlockData(blockInfo.getBlockData()));
+        //return null;
     }
 
     public static void insertInventoryToBlock(BlockInfo blockInfo, World world){

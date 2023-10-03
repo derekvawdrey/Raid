@@ -7,6 +7,7 @@ import org.bukkit.block.Block;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class BlockInfoDao {
 
@@ -37,6 +38,7 @@ public class BlockInfoDao {
     }
 
     public List<BlockInfo> getAndDeleteBlocksToReplace(Timestamp restorationTimestamp) {
+        System.out.println("Retrieving blocks");
         List<BlockInfo> blocksToReplace = new ArrayList<>();
         List<Integer> blockIdsToDelete = new ArrayList<>();
 
@@ -64,36 +66,53 @@ public class BlockInfoDao {
 
         // Delete the fetched blocks based on their IDs
         deleteBlocksByIds(blockIdsToDelete);
-
+        System.out.println("Finished blocks");
         return blocksToReplace;
     }
 
 
     // Add a method to delete blocks by their IDs
     private void deleteBlocksByIds(List<Integer> blockIds) {
-        try {
-            try (PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM block_info WHERE id = ?;")) {
-                for (int blockId : blockIds) {
-                    preparedStatement.setInt(1, blockId);
-                    preparedStatement.executeUpdate();
-                }
-            }
+        if (blockIds.isEmpty()) {
+            return;
+        }
+
+        String ids = blockIds.stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(", "));
+
+        String sql = "DELETE FROM block_info WHERE id IN (" + ids + ");";
+
+        try (Statement statement = connection.createStatement()) {
+            statement.executeUpdate(sql);
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
 
 
     public void insertBlocks(List<Block> blockList, Timestamp restorationDate) {
         try {
+            connection.setAutoCommit(false);
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    "INSERT INTO block_info (block_info_json, time_destroyed, time_to_replace) VALUES (?, CURRENT_TIMESTAMP, ?);"
+            );
+
             for (Block block : blockList) {
                 BlockInfo blockInfo = BlockUtilities.convertBlockToBlockInfo(block.getWorld(), block.getX(), block.getY(), block.getZ(), block);
-                insertBlockInfo(blockInfo, restorationDate);
+                preparedStatement.setString(1, blockInfo.toJson());
+                preparedStatement.setTimestamp(2, restorationDate);
+                preparedStatement.addBatch();
             }
+
+            preparedStatement.executeBatch();
+            connection.commit();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
 
     private void insertBlockInfo(BlockInfo blockInfo, Timestamp restorationDate) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(
