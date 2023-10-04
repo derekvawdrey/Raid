@@ -2,21 +2,16 @@ package me.amogus360.raid;
 
 import me.amogus360.raid.Commands.Faction.CreateFactionCommand;
 import me.amogus360.raid.Commands.Faction.FactionInfoCommand;
-import me.amogus360.raid.Commands.Faction.ClaimLandCommand;
-import me.amogus360.raid.Commands.Faction.ShowLandClaimsCommand;
+import me.amogus360.raid.Commands.Faction.Claim.ClaimLandCommand;
+import me.amogus360.raid.Commands.Faction.Claim.ShowLandClaimsCommand;
 import me.amogus360.raid.Commands.Money.AddMoneyCommand;
 import me.amogus360.raid.Commands.Money.MoneyCommand;
 import me.amogus360.raid.Commands.Money.SendMoneyCommand;
-import me.amogus360.raid.DAO.FactionDao;
-import me.amogus360.raid.DAO.LandClaimDao;
-import me.amogus360.raid.DAO.PlayerAccountDao;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.sql.Connection;
 
 public class RaidCommandManager implements CommandExecutor {
 
@@ -74,15 +69,7 @@ public class RaidCommandManager implements CommandExecutor {
         return newArgs;
     }
 
-    public PlayerAccountDao getPlayerAccountDao(){
-        return this.dataAccessManager.getPlayerAccountDao();
-    }
-
-    public FactionDao getFactionDao(){
-        return this.dataAccessManager.getFactionDao();
-    }
-
-    public LandClaimDao getLandClaimDao(){
-        return this.dataAccessManager.getLandClaimDao();
+    public DataAccessManager getDataAccessManager(){
+        return this.dataAccessManager;
     }
 }

@@ -1,6 +1,7 @@
-package me.amogus360.raid.Commands.Faction;
+package me.amogus360.raid.Commands.Faction.Claim;
 
 import me.amogus360.raid.Commands.RaidCommand;
+import me.amogus360.raid.DataAccessManager;
 import me.amogus360.raid.MessageManager;
 import me.amogus360.raid.Model.LandClaim;
 import me.amogus360.raid.Model.LandClaimArea;
@@ -31,7 +32,8 @@ public class ShowLandClaimsCommand extends RaidCommand {
             return;
         }
         Player player = ((Player) sender).getPlayer();
-        List<LandClaim> claimedChunks = commandManager.getLandClaimDao().getNearbyClaimChunks(player.getLocation(), 12);
+        DataAccessManager dataAccessManager = commandManager.getDataAccessManager();
+        List<LandClaim> claimedChunks = dataAccessManager.getLandClaimDao().getNearbyClaimChunks(player.getLocation(), 12);
 
         int landClaimSize = LandClaimChunkUtilities.landClaimSize;
         int yRange = 4; // The range around the player's Y position

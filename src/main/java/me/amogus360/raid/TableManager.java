@@ -115,6 +115,34 @@ public class TableManager {
         }
     }
 
+    private void createNPCDataTable() {
+        try {
+            if (!tableExists("npc_data")) {
+                try (Statement statement = connection.createStatement()) {
+                    String createTableSQL = "CREATE TABLE npc_data (" +
+                            "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                            "name TEXT NOT NULL," +
+                            "npc_id INTEGER NOT NULL," +
+                            "faction_id INTEGER NOT NULL," +
+                            "npc_title VARCHAR(255) CHECK (npc_title IN ('Mayor', 'Support')) NOT NULL," +
+                            "x DOUBLE NOT NULL," +
+                            "y DOUBLE NOT NULL," +
+                            "z DOUBLE NOT NULL," +
+                            "world VARCHAR(255) NOT NULL," + // Add the "world" column
+                            "FOREIGN KEY (faction_id) REFERENCES faction (id)" +
+                            ");";
+
+                    statement.executeUpdate(createTableSQL);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+
 
 
     private void createMoneyDataTable() {

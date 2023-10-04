@@ -1,6 +1,7 @@
 package me.amogus360.raid.Commands.Money;
 import me.amogus360.raid.Commands.RaidCommand;
 import me.amogus360.raid.DAO.PlayerAccountDao;
+import me.amogus360.raid.DataAccessManager;
 import me.amogus360.raid.MessageManager;
 import me.amogus360.raid.RaidCommandManager;
 import org.bukkit.command.CommandSender;
@@ -21,6 +22,7 @@ public class AddMoneyCommand extends RaidCommand {
             this.tellUsage(sender);
             return;
         }
+        DataAccessManager dataAccessManager = commandManager.getDataAccessManager();
 
         String playerName = args[0];
         int amount;
@@ -35,7 +37,7 @@ public class AddMoneyCommand extends RaidCommand {
         Player targetPlayer = plugin.getServer().getPlayer(playerName);
         UUID playerUUID = targetPlayer.getUniqueId();
         try {
-            commandManager.getPlayerAccountDao().updateBalance(playerUUID,amount);
+            dataAccessManager.getPlayerAccountDao().updateBalance(playerUUID,amount);
         } catch(Exception e) {
 
         }

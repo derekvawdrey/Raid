@@ -2,6 +2,7 @@ package me.amogus360.raid.Commands.Money;
 
 import me.amogus360.raid.Commands.RaidCommand;
 import me.amogus360.raid.DAO.PlayerAccountDao;
+import me.amogus360.raid.DataAccessManager;
 import me.amogus360.raid.MessageManager;
 import me.amogus360.raid.RaidCommandManager;
 import org.bukkit.command.CommandSender;
@@ -31,6 +32,7 @@ public class SendMoneyCommand extends RaidCommand {
 
         Player senderPlayer = (Player) sender;
         String recipientName = args[0];
+        DataAccessManager dataAccessManager = commandManager.getDataAccessManager();
         int amount;
 
         try {
@@ -57,7 +59,7 @@ public class SendMoneyCommand extends RaidCommand {
 
         // Use the transferMoney method to perform the money transfer
         try {
-            PlayerAccountDao playerAccountDao = commandManager.getPlayerAccountDao();
+            PlayerAccountDao playerAccountDao = dataAccessManager.getPlayerAccountDao();
             if(playerAccountDao.transferMoney(senderUUID, recipientUUID, amount)){
                 MessageManager.sendMessage(sender,"Transferred " + amount + " money to " + recipient.getName() + ".");
                 MessageManager.sendMessage(recipient,sender.getName() + " sent you " + amount + " money.");

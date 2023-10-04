@@ -2,6 +2,7 @@ package me.amogus360.raid.Commands.Faction;
 
 import me.amogus360.raid.Commands.RaidCommand;
 import me.amogus360.raid.DAO.FactionDao;
+import me.amogus360.raid.DataAccessManager;
 import me.amogus360.raid.MessageManager;
 import me.amogus360.raid.Model.FactionInfo;
 import me.amogus360.raid.RaidCommandManager;
@@ -25,9 +26,9 @@ public class FactionInfoCommand extends RaidCommand {
 
         Player player = (Player) sender;
         UUID playerUUID = player.getUniqueId();
-
+        DataAccessManager dataAccessManager = commandManager.getDataAccessManager();
         // Check if the player is in a faction
-        FactionInfo factionInfo = commandManager.getFactionDao().getFactionInfoByPlayerUUID(playerUUID);
+        FactionInfo factionInfo = dataAccessManager.getFactionDao().getFactionInfoByPlayerUUID(playerUUID);
 
         if (factionInfo != null) {
             MessageManager.sendMessage(player,"You are a member of the faction '" + factionInfo.getFactionName() + "'.");

@@ -1,7 +1,8 @@
-package me.amogus360.raid.Commands.Faction;
+package me.amogus360.raid.Commands.Faction.Claim;
 
 import me.amogus360.raid.Commands.RaidCommand;
 import me.amogus360.raid.DAO.FactionDao;
+import me.amogus360.raid.DataAccessManager;
 import me.amogus360.raid.MessageManager;
 import me.amogus360.raid.Model.LandClaim;
 import me.amogus360.raid.RaidCommandManager;
@@ -25,39 +26,40 @@ public class ClaimLandCommand extends RaidCommand {
 
         Player player = (Player) sender;
         UUID playerUUID = player.getUniqueId();
+        DataAccessManager dataAccessManager = commandManager.getDataAccessManager();
 
         // Check if the player is in a faction and is the owner or has a specific title (e.g., "officer")
-        if (!commandManager.getFactionDao().isPlayerInFaction(playerUUID)) {
+        if (!dataAccessManager.getFactionDao().isPlayerInFaction(playerUUID)) {
             MessageManager.sendMessage(player,"You are not currently in a faction.");
             return;
         }
 
-        if (!commandManager.getFactionDao().isPlayerFactionOwner(playerUUID) && !commandManager.getFactionDao().hasTitle(playerUUID, "officer")) {
+        if (!dataAccessManager.getFactionDao().isPlayerFactionOwner(playerUUID) && !dataAccessManager.getFactionDao().hasTitle(playerUUID, "officer")) {
             MessageManager.sendMessage(player,"Only the faction owner or officers can claim land.");
             return;
         }
-        int factionId = commandManager.getFactionDao().getFactionIdByPlayerUUID(player.getUniqueId());
+        int factionId = dataAccessManager.getFactionDao().getFactionIdByPlayerUUID(player.getUniqueId());
 
         // Get the location where the player wants to claim land (you need to implement this part)
 
         // Check for overlap with other factions' claims within 64 blocks (you need to implement this part)
-        if (commandManager.getLandClaimDao().hasOverlapWithOtherFactions(factionId,player.getLocation(),4)) {
+        if (dataAccessManager.getLandClaimDao().hasOverlapWithOtherFactions(factionId,player.getLocation(),4)) {
             MessageManager.sendMessage(player,"Land claim failed due to overlap with other factions.");
             return;
         }
 
-        if (!commandManager.getLandClaimDao().isWithinRadiusOfSameFactionClaim(factionId,player.getLocation(), 1)) {
+        if (!dataAccessManager.getLandClaimDao().isWithinRadiusOfSameFactionClaim(factionId,player.getLocation(), 1)) {
             MessageManager.sendMessage(player,"Land claim failed due to insufficient proximity to an existing claim.");
             return;
         }
 
-        if(commandManager.getLandClaimDao().isClaimed(player.getLocation())){
+        if(dataAccessManager.getLandClaimDao().isClaimed(player.getLocation())){
             MessageManager.sendMessage(player,"You have already claimed this chunk!");
             return;
         }
 
         // If all conditions are met, execute the land claim by adding it to the database (you need to implement this part)
-        LandClaim landClaim = commandManager.getLandClaimDao().claimLand(factionId,player.getLocation());
+        LandClaim landClaim = dataAccessManager.getLandClaimDao().claimLand(factionId,player.getLocation());
         MessageManager.sendMessage(player,"Land claimed successfully. Chunk_X = " + landClaim.getLocation().getX() + ", Chunk_Z = " + landClaim.getLocation().getZ());
     }
 }

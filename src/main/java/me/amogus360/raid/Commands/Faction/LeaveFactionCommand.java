@@ -1,6 +1,7 @@
 package me.amogus360.raid.Commands.Faction;
 import me.amogus360.raid.Commands.RaidCommand;
 import me.amogus360.raid.DAO.FactionDao;
+import me.amogus360.raid.DataAccessManager;
 import me.amogus360.raid.MessageManager;
 import me.amogus360.raid.RaidCommandManager;
 import org.bukkit.command.CommandSender;
@@ -26,15 +27,15 @@ public class LeaveFactionCommand extends RaidCommand {
 
         Player player = (Player) sender;
         UUID playerUUID = player.getUniqueId();
-
+        DataAccessManager dataAccessManager = commandManager.getDataAccessManager();
         // Check if the player is not in a faction
-        if (!commandManager.getFactionDao().isPlayerInFaction(playerUUID)) {
+        if (!dataAccessManager.getFactionDao().isPlayerInFaction(playerUUID)) {
             MessageManager.sendMessage(player,"You are not currently in a faction.");
             return;
         }
 
         // Remove the player from their current faction
-        commandManager.getFactionDao().removePlayerFromFaction(playerUUID);
+        dataAccessManager.getFactionDao().removePlayerFromFaction(playerUUID);
         MessageManager.sendMessage(player,"You have left your faction.");
     }
 }

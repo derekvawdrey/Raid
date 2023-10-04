@@ -3,6 +3,7 @@ package me.amogus360.raid;
 import me.amogus360.raid.EventHandlers.LandClaimBlockEventHandler;
 import me.amogus360.raid.EventHandlers.PlayerJoinEventHandler;
 import me.amogus360.raid.Tasks.BlockReplacementTask;
+import me.amogus360.raid.Tasks.BossBarUpdateTask;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -31,12 +32,17 @@ public class Raid extends JavaPlugin implements Listener {
 
         initCommands();
         initEvents();
+        initTasks();
 
-        BlockReplacementTask.startTask(this, this.dataAccessManager);
     }
 
     private void initCommands(){
         getCommand("raid").setExecutor(new RaidCommandManager(this, this.dataAccessManager));
+    }
+
+    private void initTasks(){
+        BlockReplacementTask.startTask(this, this.dataAccessManager);
+        BossBarUpdateTask.startTask(this,this.dataAccessManager);
     }
 
     private void initEvents(){
