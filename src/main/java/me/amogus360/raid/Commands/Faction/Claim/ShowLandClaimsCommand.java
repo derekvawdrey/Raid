@@ -3,23 +3,17 @@ package me.amogus360.raid.Commands.Faction.Claim;
 import me.amogus360.raid.Commands.RaidCommand;
 import me.amogus360.raid.DataAccessManager;
 import me.amogus360.raid.MessageManager;
-import me.amogus360.raid.Model.LandClaim;
-import me.amogus360.raid.Model.LandClaimArea;
-import me.amogus360.raid.Model.LandClaimLocation;
+import me.amogus360.raid.Model.LandClaim.LandClaim;
+import me.amogus360.raid.Model.LandClaim.LandClaimArea;
+import me.amogus360.raid.Model.LandClaim.LandClaimLocation;
 import me.amogus360.raid.RaidCommandManager;
 import me.amogus360.raid.Utilities.LandClaimChunkUtilities;
 import org.bukkit.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class ShowLandClaimsCommand extends RaidCommand {
     public ShowLandClaimsCommand(JavaPlugin plugin, String usage) {

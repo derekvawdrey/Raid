@@ -18,7 +18,7 @@ public class RaidBossEventHandler implements Listener {
     }
 
     @EventHandler
-    public void onEntityDamage(EntityDamageEvent event){
+    public void onEntityDamage(EntityDamageEvent event) {
         Entity entity = event.getEntity();
         LivingEntity livingEntity = (LivingEntity) event.getEntity();
 

@@ -1,4 +1,4 @@
-package me.amogus360.raid.Model;
+package me.amogus360.raid.Model.LandClaim;
 public class LandClaimArea {
     private int minX;
     private int minY;

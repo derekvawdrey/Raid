@@ -1,17 +1,13 @@
 package me.amogus360.raid.DAO;
-import me.amogus360.raid.Model.FactionInfo;
-import me.amogus360.raid.Model.LandClaim;
+import me.amogus360.raid.Model.LandClaim.LandClaim;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
-import me.amogus360.raid.Model.LandClaimLocation;
+import me.amogus360.raid.Model.LandClaim.LandClaimLocation;
 import me.amogus360.raid.Utilities.LandClaimChunkUtilities;
 import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.entity.Player;
 
 public class LandClaimDao {
 

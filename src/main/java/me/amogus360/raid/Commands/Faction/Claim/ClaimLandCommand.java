@@ -1,10 +1,9 @@
 package me.amogus360.raid.Commands.Faction.Claim;
 
 import me.amogus360.raid.Commands.RaidCommand;
-import me.amogus360.raid.DAO.FactionDao;
 import me.amogus360.raid.DataAccessManager;
 import me.amogus360.raid.MessageManager;
-import me.amogus360.raid.Model.LandClaim;
+import me.amogus360.raid.Model.LandClaim.LandClaim;
 import me.amogus360.raid.RaidCommandManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

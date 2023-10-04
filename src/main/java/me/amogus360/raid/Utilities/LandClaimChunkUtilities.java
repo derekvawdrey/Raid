@@ -1,7 +1,7 @@
 package me.amogus360.raid.Utilities;
 
-import me.amogus360.raid.Model.LandClaimArea;
-import me.amogus360.raid.Model.LandClaimLocation;
+import me.amogus360.raid.Model.LandClaim.LandClaimArea;
+import me.amogus360.raid.Model.LandClaim.LandClaimLocation;
 import org.bukkit.Location;
 import org.bukkit.World;
 

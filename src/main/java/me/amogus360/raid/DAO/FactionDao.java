@@ -1,13 +1,10 @@
 package me.amogus360.raid.DAO;
 import me.amogus360.raid.Model.FactionInfo;
-import me.amogus360.raid.Model.LandClaim;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
 
 public class FactionDao {
 
