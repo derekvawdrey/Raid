@@ -541,6 +541,17 @@ public class FactionDao {
         }
     }
 
+    public void rescindAllInvites(UUID inviteeUUID) {
+        String rescindInviteSQL = "DELETE FROM faction_invites AND invitee_uuid = ?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(rescindInviteSQL)) {
+            preparedStatement.setString(1, inviteeUUID.toString());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void rescindInvite(int inviteId) {
         // Remove the invite with the specified ID
         String rescindInviteSQL = "DELETE FROM faction_invites WHERE id = ?";
@@ -552,6 +563,35 @@ public class FactionDao {
             e.printStackTrace();
         }
     }
+
+    public List<String> getPendingInvitations(String playerUUID) {
+        List<String> invites = new ArrayList<>();
+
+        // SQL query to retrieve pending invitations for the player including faction name
+        String sql = "SELECT inviter_uuid, faction.name AS faction_name FROM faction_invites " +
+                "INNER JOIN faction ON faction_invites.faction_id = faction.id " +
+                "WHERE invitee_uuid = ?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, playerUUID);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    String inviterUUID = resultSet.getString("inviter_uuid");
+                    String factionName = resultSet.getString("faction_name");
+
+                    // Format the invitation message as needed
+                    String invitationMessage = "Invited by: " + inviterUUID + " to faction: " + factionName;
+                    invites.add(invitationMessage);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return invites;
+    }
+
 
 
     public void acceptInvite(UUID inviteeUUID, int factionId) {
@@ -575,10 +615,64 @@ public class FactionDao {
 
         // If an invite was found, remove it and add the player to the faction
         if (inviteId != -1) {
-            rescindInvite(inviteId); // Pass the inviteId to the rescindInvite function
+            rescindAllInvites(inviteeUUID); // Pass the inviteId to the rescindInvite function
             addToFaction(inviteeUUID, factionId); // Implement addToFaction as needed
         }
     }
+
+    public void acceptInviteByFactionName(UUID inviteeUUID, String factionName) {
+        // Get the faction ID based on the faction name
+        int factionId = getFactionIdByName(factionName);
+
+        if (factionId == -1) {
+            // Faction not found; you can handle this as needed, e.g., return an error message
+            return;
+        }
+
+        // Check if the invite exists
+        String checkInviteSQL = "SELECT id FROM faction_invites WHERE invitee_uuid = ? AND faction_id = ?";
+        int inviteId = -1; // Initialize inviteId with a default value
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(checkInviteSQL)) {
+            preparedStatement.setString(1, inviteeUUID.toString());
+            preparedStatement.setInt(2, factionId);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    // The invite exists; get its ID
+                    inviteId = resultSet.getInt("id");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        // If an invite was found, remove it and add the player to the faction
+        if (inviteId != -1) {
+            rescindAllInvites(inviteeUUID); // Pass the inviteId to the rescindInvite function
+            addToFaction(inviteeUUID, factionId); // Implement addToFaction as needed
+        }
+    }
+
+    public boolean hasPendingInvitation(UUID inviteeUUID, int factionId) {
+        String query = "SELECT COUNT(*) FROM faction_invites WHERE invitee_uuid = ? AND faction_id = ?;";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, inviteeUUID.toString());
+            statement.setInt(2, factionId);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    int count = resultSet.getInt(1);
+                    return count > 0;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+
+
 
 
     public void addToFaction(UUID playerUUID, int factionId) {
@@ -612,39 +706,7 @@ public class FactionDao {
     }
 
 
-    public void acceptInviteByFactionName(UUID inviteeUUID, String factionName) {
-        // Get the faction ID based on the faction name
-        int factionId = getFactionIdByName(factionName);
 
-        if (factionId == -1) {
-            // Faction not found; you can handle this as needed, e.g., return an error message
-            return;
-        }
-
-        // Check if the invite exists
-        String checkInviteSQL = "SELECT id FROM faction_invites WHERE invitee_uuid = ? AND faction_id = ?";
-        int inviteId = -1; // Initialize inviteId with a default value
-
-        try (PreparedStatement preparedStatement = connection.prepareStatement(checkInviteSQL)) {
-            preparedStatement.setString(1, inviteeUUID.toString());
-            preparedStatement.setInt(2, factionId);
-
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) {
-                    // The invite exists; get its ID
-                    inviteId = resultSet.getInt("id");
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        // If an invite was found, remove it and add the player to the faction
-        if (inviteId != -1) {
-            rescindInvite(inviteId); // Pass the inviteId to the rescindInvite function
-            addToFaction(inviteeUUID, factionId); // Implement addToFaction as needed
-        }
-    }
 
     public int getFactionIdByName(String factionName) {
         String getFactionIdSQL = "SELECT id FROM faction WHERE name = ?";
@@ -663,6 +725,28 @@ public class FactionDao {
 
         // Return -1 by default if there's an error or the faction name is not found
         return -1;
+    }
+
+    public FactionInfo getFactionInfoByName(String factionName) {
+        String query = "SELECT * FROM faction WHERE name = ?;";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, factionName);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    int factionId = resultSet.getInt("id");
+                    int factionOwnerId = resultSet.getInt("owner_id");
+
+                    // Create a FactionInfo object with the retrieved data
+                    FactionInfo factionInfo = new FactionInfo(factionId, factionName, factionOwnerId);
+                    // Populate other faction information in the FactionInfo object
+
+                    return factionInfo;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null; // Return null if the faction with the provided name was not found
     }
 
     public List<UUID> getFactionMembersByFactionId(int factionId) {

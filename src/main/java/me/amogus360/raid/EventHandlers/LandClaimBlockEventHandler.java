@@ -11,9 +11,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockFromToEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityExplodeEvent;
 
 import java.sql.Timestamp;
@@ -96,18 +94,7 @@ public class LandClaimBlockEventHandler implements Listener {
             // Remove all blocks inside land claims from the block list
             event.blockList().removeAll(blocksToRemove);
         }else{
-            List<Block> blocksToRegenerate = new ArrayList<>();
-
-            for (Block block : event.blockList()) {
-                Location blockLocation = block.getLocation();
-                boolean isBlockInsideLandClaim = dataAccessManager.getLandClaimDao().isClaimed(blockLocation);
-
-                if (isBlockInsideLandClaim) {
-                    if(block.getType() != Material.AIR && block.getType() != Material.TNT) blocksToRegenerate.add(block);
-                }
-            }
-            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-            dataAccessManager.getBlockInfoDao().insertBlocks(blocksToRegenerate, timestamp);
+            event.blockList().clear();
         }
     }
 
@@ -121,5 +108,37 @@ public class LandClaimBlockEventHandler implements Listener {
             }
         }
     }
+
+    @EventHandler
+    public void onPistonExtend(BlockPistonExtendEvent event) {
+        // Check if the piston is not in a claimed land
+        if (!dataAccessManager.getLandClaimDao().isClaimed(event.getBlock().getLocation())) {
+            // Iterate through the blocks that the piston is trying to move
+            for (Block block : event.getBlocks()) {
+                // Check if the destination block is claimed
+                if (dataAccessManager.getLandClaimDao().isClaimed(block.getLocation())) {
+                    event.setCancelled(true); // Cancel the piston extension
+                    return; // No need to check further
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPistonRetract(BlockPistonRetractEvent event) {
+        // Check if the piston is not in a claimed land
+        if (!dataAccessManager.getLandClaimDao().isClaimed(event.getBlock().getLocation())) {
+            // Iterate through the blocks that the piston is trying to retract
+            for (Block block : event.getBlocks()) {
+                // Check if the source block is claimed
+                if (dataAccessManager.getLandClaimDao().isClaimed(block.getLocation())) {
+                    event.setCancelled(true); // Cancel the piston retraction
+                    return; // No need to check further
+                }
+            }
+        }
+    }
+
+
 }
 

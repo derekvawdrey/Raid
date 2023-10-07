@@ -31,16 +31,18 @@ public class LandClaimDao {
     public List<LandClaim> getLandClaimsWithFactionInRadius(Location centerLocation, int radius) {
         List<LandClaim> landClaims = new ArrayList<>();
         Location convertedChunkCoordinate = LandClaimChunkUtilities.convertToChunkCoordinate(centerLocation);
+        String worldName = convertedChunkCoordinate.getWorld().getName();
         String getClaimsSQL = "SELECT lc.id AS claim_id, lc.chunk_x, lc.chunk_z, lc.chunk_y, lc.chunk_world, f.id AS faction_id, f.name AS faction_name " +
                 "FROM land_claims lc " +
                 "INNER JOIN faction f ON lc.faction_id = f.id " +
-                "WHERE lc.chunk_x BETWEEN ? AND ? AND lc.chunk_z BETWEEN ? AND ?";
+                "WHERE lc.chunk_x BETWEEN ? AND ? AND lc.chunk_z BETWEEN ? AND ? AND lc.chunk_world = ?";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(getClaimsSQL)) {
             preparedStatement.setInt(1, convertedChunkCoordinate.getBlockX() - radius);
             preparedStatement.setInt(2, convertedChunkCoordinate.getBlockX() + radius);
             preparedStatement.setInt(3, convertedChunkCoordinate.getBlockZ() - radius);
             preparedStatement.setInt(4, convertedChunkCoordinate.getBlockZ() + radius);
+            preparedStatement.setString(5, worldName);
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
@@ -99,18 +101,20 @@ public class LandClaimDao {
     public List<LandClaim> getNearbyClaimChunks(Location centerLocation, int radius) {
         List<LandClaim> nearbyClaims = new ArrayList<>();
         Location convertedChunkCoordinate = LandClaimChunkUtilities.convertToChunkCoordinate(centerLocation);
+        String claimWorldName = convertedChunkCoordinate.getWorld().getName();
         String retrieveClaimsSQL = "SELECT lc.id AS claim_id, lc.faction_id, lc.chunk_x, lc.chunk_z, lc.chunk_y, lc.chunk_world, f.name AS faction_name " +
                 "FROM land_claims lc " +
                 "INNER JOIN faction f ON lc.faction_id = f.id " +
                 "WHERE " +
                 "  chunk_x BETWEEN ? AND ? AND " +
-                "  chunk_z BETWEEN ? AND ?";
+                "  chunk_z BETWEEN ? AND ? AND chunk_world = ?";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(retrieveClaimsSQL)) {
             preparedStatement.setInt(1, convertedChunkCoordinate.getBlockX() - radius);
             preparedStatement.setInt(2, convertedChunkCoordinate.getBlockX() + radius);
             preparedStatement.setInt(3, convertedChunkCoordinate.getBlockZ() - radius);
             preparedStatement.setInt(4, convertedChunkCoordinate.getBlockZ() + radius);
+            preparedStatement.setString(5, claimWorldName);
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
@@ -141,11 +145,12 @@ public class LandClaimDao {
                 "INNER JOIN faction f ON lc.faction_id = f.id " +
                 "WHERE " +
                 "  chunk_x = ? AND " +
-                "  chunk_z = ?";
+                "  chunk_z = ? AND chunk_world = ?";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(retrieveClaimsSQL)) {
             preparedStatement.setInt(1, convertedChunkCoordinate.getBlockX() );
             preparedStatement.setInt(2, convertedChunkCoordinate.getBlockZ() );
+            preparedStatement.setString(3, convertedChunkCoordinate.getWorld().getName() );
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
                     int claimId = resultSet.getInt("claim_id");
@@ -175,11 +180,12 @@ public class LandClaimDao {
         int chunk_x = (int) convertedChunkCoordinate.getX();
         int chunk_y = (int) convertedChunkCoordinate.getY();
         int chunk_z = (int) convertedChunkCoordinate.getZ();
-        String querySQL = "SELECT COUNT(*) AS claim_count FROM land_claims WHERE chunk_x = ? AND chunk_z = ?";
+        String querySQL = "SELECT COUNT(*) AS claim_count FROM land_claims WHERE chunk_x = ? AND chunk_z = ? AND chunk_world = ?";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(querySQL)) {
             preparedStatement.setInt(1, chunk_x);
             preparedStatement.setInt(2, chunk_z);
+            preparedStatement.setString(3, convertedChunkCoordinate.getWorld().getName());
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
@@ -234,7 +240,7 @@ public class LandClaimDao {
                 "FROM land_claims " +
                 "WHERE faction_id != ? " +  // Exclude the current faction
                 "AND chunk_x BETWEEN ? AND ? " +
-                "AND chunk_z BETWEEN ? AND ?";
+                "AND chunk_z BETWEEN ? AND ? AND chunk_world = ?";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(querySQL)) {
             preparedStatement.setInt(1, factionId);
@@ -242,6 +248,7 @@ public class LandClaimDao {
             preparedStatement.setInt(3, maxchunk_x);
             preparedStatement.setInt(4, minchunk_z);
             preparedStatement.setInt(5, maxchunk_z);
+            preparedStatement.setString(6, player_location_converted.getWorld().getName());
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
@@ -270,7 +277,7 @@ public class LandClaimDao {
                 "FROM land_claims " +
                 "WHERE faction_id = ? " +  // Restrict to claims of the same faction
                 "AND chunk_x BETWEEN ? AND ? " +
-                "AND chunk_z BETWEEN ? AND ?";
+                "AND chunk_z BETWEEN ? AND ? AND chunk_world = ?";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(querySQL)) {
             preparedStatement.setInt(1, factionId);
@@ -278,6 +285,7 @@ public class LandClaimDao {
             preparedStatement.setInt(3, maxchunk_x);
             preparedStatement.setInt(4, minchunk_z);
             preparedStatement.setInt(5, maxchunk_z);
+            preparedStatement.setString(6, player_location_converted.getWorld().getName());
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
@@ -306,13 +314,14 @@ public class LandClaimDao {
         String querySQL = "SELECT COUNT(*) AS overlap_count " +
                 "FROM land_claims " +
                 "WHERE chunk_x BETWEEN ? AND ? " +
-                "AND chunk_z BETWEEN ? AND ?";
+                "AND chunk_z BETWEEN ? AND ? AND chunk_world = ?";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(querySQL)) {
             preparedStatement.setInt(1, minchunk_X);
             preparedStatement.setInt(2, maxchunk_X);
             preparedStatement.setInt(3, minchunk_Z);
             preparedStatement.setInt(4, maxchunk_Z);
+            preparedStatement.setString(5,chunkCoordinate.getWorld().getName());
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {

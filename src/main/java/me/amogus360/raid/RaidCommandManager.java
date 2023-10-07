@@ -1,9 +1,9 @@
 package me.amogus360.raid;
 
-import me.amogus360.raid.Commands.Faction.CreateFactionCommand;
-import me.amogus360.raid.Commands.Faction.FactionInfoCommand;
+import me.amogus360.raid.Commands.Faction.*;
 import me.amogus360.raid.Commands.Faction.Claim.ClaimLandCommand;
 import me.amogus360.raid.Commands.Faction.Claim.ShowLandClaimsCommand;
+import me.amogus360.raid.Commands.MobTest;
 import me.amogus360.raid.Commands.Money.AddMoneyCommand;
 import me.amogus360.raid.Commands.Money.MoneyCommand;
 import me.amogus360.raid.Commands.Money.SendMoneyCommand;
@@ -36,7 +36,10 @@ public class RaidCommandManager implements CommandExecutor {
         String subcommand = args[0].toLowerCase();
         // Remove the first element (subcommand) from the args array
         String[] newArgs = removeOneArg(args);
-        if (subcommand.equals("money")) {
+        if(subcommand.equals("mob")){
+            new MobTest(plugin, "/raid mob").execute(sender, newArgs, this);
+        }
+        else if (subcommand.equals("money")) {
             // Handle /raid money
             if(newArgs.length < 1) new MoneyCommand(plugin, "/raid money").execute(sender, newArgs,this);
             else if(newArgs[0].equals("add")) new AddMoneyCommand(plugin, "/raid money add [player_name] [amount]").execute(sender, removeOneArg(newArgs), this);
@@ -50,6 +53,13 @@ public class RaidCommandManager implements CommandExecutor {
                     String[] landArgs = removeOneArg(newArgs);
                     if(landArgs[0].equals("claim")) new ClaimLandCommand(plugin, "/raid faction land claim").execute(sender,removeOneArg(newArgs),this);
                     else if(landArgs[0].equals("show")) new ShowLandClaimsCommand(plugin, "/raid faction show").execute(sender,removeOneArg(newArgs),this);
+                }else if(newArgs[0].equals("invites")){
+                    String[] inviteArgs = removeOneArg(newArgs);
+                    if(inviteArgs[0].equals("send")) new InviteFactionCommand(plugin, "/raid faction invites send [player]").execute(sender,removeOneArg(inviteArgs),this);
+                    else if(inviteArgs[0].equals("accept")) new AcceptInvitationCommand(plugin, "/raid faction invites accept [faction-name]").execute(sender,removeOneArg(inviteArgs),this);
+                    else if(inviteArgs[0].equals("show")) new ListInvitesCommand(plugin, "/raid faction invite show").execute(sender,removeOneArg(inviteArgs),this);
+                }else if(newArgs[0].equals("leave")){
+                     new LeaveFactionCommand(plugin, "/raid faction leave").execute(sender,removeOneArg(newArgs),this);
                 }
             }else{
                 // Send a help message containing all usages

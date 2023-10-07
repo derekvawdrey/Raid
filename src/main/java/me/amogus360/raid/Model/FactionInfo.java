@@ -5,12 +5,12 @@ import java.util.UUID;
 public class FactionInfo {
     private int factionId;
     private String factionName;
-    private int factionOwnerUUID;
+    private int factionOwnerId;
 
-    public FactionInfo(int factionId, String factionName, int factionOwnerUUID) {
+    public FactionInfo(int factionId, String factionName, int factionOwnerId) {
         this.factionId = factionId;
         this.factionName = factionName;
-        this.factionOwnerUUID = factionOwnerUUID;
+        this.factionOwnerId = factionOwnerId;
     }
 
     public int getFactionId() {
@@ -21,8 +21,8 @@ public class FactionInfo {
         return factionName;
     }
 
-    public int getFactionOwnerUUID() {
-        return factionOwnerUUID;
+    public int factionOwnerId() {
+        return factionOwnerId;
     }
 
     @Override
@@ -30,7 +30,7 @@ public class FactionInfo {
         return "FactionInfo{" +
                 "factionId=" + factionId +
                 ", factionName='" + factionName + '\'' +
-                ", factionOwnerUUID=" + factionOwnerUUID +
+                ", factionOwnerUUID=" + factionOwnerId +
                 '}';
     }
 }

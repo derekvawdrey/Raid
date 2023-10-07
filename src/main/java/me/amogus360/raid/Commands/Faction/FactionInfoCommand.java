@@ -32,7 +32,7 @@ public class FactionInfoCommand extends RaidCommand {
 
         if (factionInfo != null) {
             MessageManager.sendMessage(player,"You are a member of the faction '" + factionInfo.getFactionName() + "'.");
-            MessageManager.sendMessage(player,"Faction Owner: " + factionInfo.getFactionOwnerUUID());
+            MessageManager.sendMessage(player,"Faction Owner: " + factionInfo.getFactionId());
         } else {
             MessageManager.sendMessage(player,"You are not currently in a faction.");
         }

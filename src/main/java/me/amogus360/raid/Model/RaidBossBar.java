@@ -8,21 +8,27 @@ import org.bukkit.boss.BossBar;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
+import java.util.UUID;
+
 public class RaidBossBar {
     private LivingEntity entity;
     private BossBar bossBar;
-    private int entityId;
+    private UUID entityId;
 
     public RaidBossBar(LivingEntity entity) {
         this.entity = entity;
         this.bossBar = Bukkit.createBossBar(entity.getCustomName(), BarColor.RED, BarStyle.SOLID);
         this.bossBar.setProgress(entity.getHealth() / entity.getMaxHealth());
+        this.entityId = entity.getUniqueId();
     }
 
     public void update() {
         this.bossBar.setProgress(entity.getHealth() / entity.getMaxHealth());
 
         for (Player player : Bukkit.getOnlinePlayers()) {
+            if(player.getLocation().getWorld() != entity.getLocation().getWorld()) {
+                removePlayer(player);
+            }
             Location playerLocation = player.getLocation();
             if (playerLocation.distance(entity.getLocation()) <= 50) {
                 addPlayer(player);
@@ -39,5 +45,5 @@ public class RaidBossBar {
     public void removePlayer(Player player) {
         this.bossBar.removePlayer(player);
     }
-    public int getEntityId(){ return this.entityId; }
+    public UUID getEntityId(){ return this.entityId; }
 }
