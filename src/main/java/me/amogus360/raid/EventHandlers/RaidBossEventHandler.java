@@ -23,13 +23,15 @@ public class RaidBossEventHandler implements Listener {
 
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
-        // Remove the boss bar and
-        Entity entity = event.getEntity();
-        if(entity.hasMetadata("faction_id")) {
-            LivingEntity livingEntity = (LivingEntity) event.getEntity();
-            if (entity.isDead()) {
-                dataAccessManager.getBossBarDataAccess().removeAllPlayersFromBossBar(entity.getUniqueId());
-                dataAccessManager.getBossBarDataAccess().removeBossBar(entity.getUniqueId());
+        if(event.getEntity() instanceof LivingEntity) {
+            // Remove the boss bar and
+            Entity entity = event.getEntity();
+            if (entity.hasMetadata("faction_id")) {
+                LivingEntity livingEntity = (LivingEntity) event.getEntity();
+                if (entity.isDead()) {
+                    dataAccessManager.getBossBarDataAccess().removeAllPlayersFromBossBar(entity.getUniqueId());
+                    dataAccessManager.getBossBarDataAccess().removeBossBar(entity.getUniqueId());
+                }
             }
         }
     }

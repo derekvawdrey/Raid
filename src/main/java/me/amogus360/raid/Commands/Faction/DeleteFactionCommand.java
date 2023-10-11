@@ -10,16 +10,15 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.UUID;
 
-public class LeaveFactionCommand extends RaidCommand {
+public class DeleteFactionCommand extends RaidCommand {
 
-    public LeaveFactionCommand(JavaPlugin plugin, String usage) {
+    public DeleteFactionCommand(JavaPlugin plugin, String usage) {
         super(plugin, usage);
     }
 
     @Override
     public void execute(CommandSender sender, String[] args, CommandManager commandManager) {
-        // TODO: If the player is the last player in the faction, delete the faction
-        // TODO: If the player is the owner, disband the faction/ask for clarification before deleting the faction
+
         // TODO (NOT YET): If the faction is disbanded, end the raid without giving awards? and delete the raid boss
         if (!(sender instanceof Player)) {
             MessageManager.sendMessage(sender,"Only players can use this command.");
@@ -35,13 +34,16 @@ public class LeaveFactionCommand extends RaidCommand {
             return;
         }
 
-        if(dataAccessManager.getFactionDao().isPlayerFactionOwner(player.getUniqueId())){
-            MessageManager.sendMessage(player,"As a faction owner, you must delete your faction to leave. (/faction delete)");
+        if(dataAccessManager.getFactionDao().isPlayerFactionOwner(playerUUID)) {
+            // Remove the player from their current faction
+            dataAccessManager.getLandClaimDao().removeAllLandClaimsByFactionId(dataAccessManager.getFactionDao().getFactionIdByPlayerUUID(playerUUID));
+            dataAccessManager.getFactionDao().deleteFaction(playerUUID);
+
+            MessageManager.sendMessage(player, "You have deleted your faction.");
+            return;
+        }else{
+            MessageManager.sendMessage(player, "You are not the owner of the faction, and can't delete it.");
             return;
         }
-
-        // Remove the player from their current faction
-        dataAccessManager.getFactionDao().removePlayerFromFaction(playerUUID);
-        MessageManager.sendMessage(player,"You have left your faction.");
     }
 }

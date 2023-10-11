@@ -1,10 +1,15 @@
 package me.amogus360.raid;
 
+import me.amogus360.raid.CommandManager.FactionCommandManager;
+import me.amogus360.raid.CommandManager.MoneyCommandManager;
+import me.amogus360.raid.CommandManager.RaidCommandManager;
+import me.amogus360.raid.Commands.Raid.RaidStart;
 import me.amogus360.raid.EventHandlers.LandClaimBlockEventHandler;
 import me.amogus360.raid.EventHandlers.PlayerJoinEventHandler;
 import me.amogus360.raid.EventHandlers.RaidBossEventHandler;
 import me.amogus360.raid.Tasks.BlockReplacementTask;
 import me.amogus360.raid.Tasks.BossBarUpdateTask;
+import me.amogus360.raid.Tasks.RaidStartEndTask;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -39,11 +44,14 @@ public class Raid extends JavaPlugin implements Listener {
 
     private void initCommands(){
         getCommand("raid").setExecutor(new RaidCommandManager(this, this.dataAccessManager));
+        getCommand("money").setExecutor(new MoneyCommandManager(this, this.dataAccessManager));
+        getCommand("faction").setExecutor(new FactionCommandManager(this, this.dataAccessManager));
     }
 
     private void initTasks(){
         BlockReplacementTask.startTask(this, this.dataAccessManager);
         BossBarUpdateTask.startTask(this,this.dataAccessManager);
+        RaidStartEndTask.startTask(this, this.dataAccessManager);
     }
 
     private void initEvents(){

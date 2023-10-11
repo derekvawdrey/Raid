@@ -1,10 +1,11 @@
-package me.amogus360.raid.Commands.Faction;
+package me.amogus360.raid.Commands.Faction.Invite;
 
+import me.amogus360.raid.CommandManager.CommandManager;
 import me.amogus360.raid.Commands.RaidCommand;
 import me.amogus360.raid.DAO.FactionDao;
 import me.amogus360.raid.MessageManager;
 import me.amogus360.raid.Model.FactionInfo;
-import me.amogus360.raid.RaidCommandManager;
+import me.amogus360.raid.CommandManager.RaidCommandManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -18,7 +19,7 @@ public class AcceptInvitationCommand extends RaidCommand {
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args, RaidCommandManager commandManager) {
+    public void execute(CommandSender sender, String[] args, CommandManager commandManager) {
         if (!(sender instanceof Player)) {
             MessageManager.sendMessage(sender, "Only players can accept invitations.");
             return;

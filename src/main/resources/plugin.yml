@@ -5,21 +5,17 @@ api-version: 1.20
 load: startup
 commands:
   raid:
-    description: Main command for the Raid plugin
+    description: Command for raids
     usage: /raid <subcommand>
     aliases: [r]
-    subcommands:
-      money:
-        description: Money-related commands
-        usage: /raid money <subcommand>
-        aliases: [m]
-        subcommands:
-          send:
-            description: Send money to another player
-            usage: /raid money send <player> <amount>
-          add:
-            description: Add money to a player's account
-            usage: /raid money add <player> <amount>
+  faction:
+    description: Main command for factions
+    usage: /raid <subcommand>
+    aliases: [ r ]
+  money:
+    description: Main command for money
+    usage: /raid <subcommand>
+    aliases: [ r ]
 
 
 

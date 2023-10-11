@@ -1,12 +1,13 @@
-package me.amogus360.raid.Commands.Faction.Claim;
+package me.amogus360.raid.Commands.LandClaim;
 
+import me.amogus360.raid.CommandManager.CommandManager;
 import me.amogus360.raid.Commands.RaidCommand;
 import me.amogus360.raid.DataAccessManager;
 import me.amogus360.raid.MessageManager;
 import me.amogus360.raid.Model.LandClaim.LandClaim;
 import me.amogus360.raid.Model.LandClaim.LandClaimArea;
 import me.amogus360.raid.Model.LandClaim.LandClaimLocation;
-import me.amogus360.raid.RaidCommandManager;
+import me.amogus360.raid.CommandManager.RaidCommandManager;
 import me.amogus360.raid.Utilities.LandClaimChunkUtilities;
 import org.bukkit.*;
 import org.bukkit.command.CommandSender;
@@ -20,7 +21,7 @@ public class ShowLandClaimsCommand extends RaidCommand {
         super(plugin, usage);
     }
     @Override
-    public void execute(CommandSender sender, String[] args, RaidCommandManager commandManager) {
+    public void execute(CommandSender sender, String[] args, CommandManager commandManager) {
         if (!(sender instanceof Player)) {
             MessageManager.sendMessage(sender, "Only players can use this");
             return;

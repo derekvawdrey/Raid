@@ -28,12 +28,13 @@ public class RaidBossBar {
         for (Player player : Bukkit.getOnlinePlayers()) {
             if(player.getLocation().getWorld() != entity.getLocation().getWorld()) {
                 removePlayer(player);
-            }
-            Location playerLocation = player.getLocation();
-            if (playerLocation.distance(entity.getLocation()) <= 50) {
-                addPlayer(player);
-            } else {
-                removePlayer(player);
+            }else {
+                Location playerLocation = player.getLocation();
+                if (playerLocation.distance(entity.getLocation()) <= 50) {
+                    addPlayer(player);
+                } else {
+                    removePlayer(player);
+                }
             }
         }
     }

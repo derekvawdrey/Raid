@@ -1,5 +1,7 @@
 package me.amogus360.raid.DAO;
 import me.amogus360.raid.Model.FactionInfo;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -14,8 +16,8 @@ public class FactionDao {
         this.connection = connection;
     }
 
-    public int createFaction(UUID ownerUUID, String factionName) {
-        String insertFactionSQL = "INSERT INTO faction (name, owner_id) VALUES (?, ?)";
+    public int createFaction(UUID ownerUUID, String factionName, Location location) {
+        String insertFactionSQL = "INSERT INTO faction (name, owner_id, spawn_x, spawn_y, spawn_z, spawn_world, raid_boss_x, raid_boss_y, raid_boss_z, raid_boss_world) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(insertFactionSQL, Statement.RETURN_GENERATED_KEYS)) {
             // Set the faction name
@@ -25,6 +27,14 @@ public class FactionDao {
             PlayerAccountDao playerAccountDao = new PlayerAccountDao(this.connection);
             preparedStatement.setInt(2, playerAccountDao.getPlayerIdByUUID(ownerUUID));
 
+            preparedStatement.setDouble(3, location.getX());
+            preparedStatement.setDouble(4, location.getY());
+            preparedStatement.setDouble(5, location.getZ());
+            preparedStatement.setString(6, location.getWorld().getName());
+            preparedStatement.setDouble(7, location.getX());
+            preparedStatement.setDouble(8, location.getY());
+            preparedStatement.setDouble(9, location.getZ());
+            preparedStatement.setString(10, location.getWorld().getName());
             // Execute the SQL statement to insert the new faction and retrieve the generated keys
             int affectedRows = preparedStatement.executeUpdate();
 
@@ -43,6 +53,84 @@ public class FactionDao {
             e.printStackTrace();
             return -1;
         }
+    }
+
+    public void updateSpawnLocation(int factionId, Location location) {
+        String updateSpawnLocationSQL = "UPDATE faction SET spawn_x = ?, spawn_y = ?, spawn_z = ?, spawn_world = ? WHERE id = ?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(updateSpawnLocationSQL)) {
+            preparedStatement.setDouble(1, location.getX());
+            preparedStatement.setDouble(2, location.getY());
+            preparedStatement.setDouble(3, location.getZ());
+            preparedStatement.setString(4, location.getWorld().getName());
+            preparedStatement.setInt(5, factionId);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateRaidBossLocation(int factionId, Location location) {
+        String updateRaidBossLocationSQL = "UPDATE faction SET raid_boss_x = ?, raid_boss_y = ?, raid_boss_z = ?, raid_boss_world = ? WHERE id = ?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(updateRaidBossLocationSQL)) {
+            preparedStatement.setDouble(1, location.getX());
+            preparedStatement.setDouble(2, location.getY());
+            preparedStatement.setDouble(3, location.getZ());
+            preparedStatement.setString(4, location.getWorld().getName());
+            preparedStatement.setInt(5, factionId);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Location getSpawnLocation(int factionId){
+        String updateRaidBossLocationSQL = "SELECT spawn_x, spawn_y, spawn_z, spawn_world FROM faction WHERE id = ?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(updateRaidBossLocationSQL)) {
+            preparedStatement.setInt(1, factionId);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                // Check if there's at least one result and the faction_id is not null
+                if(resultSet.next()){
+                    double x = resultSet.getDouble("spawn_x");
+                    double y =resultSet.getDouble("spawn_y");
+                    double z =resultSet.getDouble("spawn_z");
+                    String world = resultSet.getString("spawn_world");
+
+                    return new Location(Bukkit.getWorld(world),x,y,z);
+                }
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public Location getRaidBossLocation(int factionId){
+        String updateRaidBossLocationSQL = "SELECT raid_boss_x, raid_boss_y, raid_boss_z, raid_boss_world FROM faction WHERE id = ?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(updateRaidBossLocationSQL)) {
+            preparedStatement.setInt(1, factionId);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                // Check if there's at least one result and the faction_id is not null
+                if(resultSet.next()){
+                    double x = resultSet.getDouble("raid_boss_x");
+                    double y =resultSet.getDouble("raid_boss_y");
+                    double z =resultSet.getDouble("raid_boss_z");
+                    String world = resultSet.getString("raid_boss_world");
+
+                    return new Location(Bukkit.getWorld(world),x,y,z);
+                }
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 
@@ -190,7 +278,7 @@ public class FactionDao {
 
     private void deleteMembersFromFaction(int factionId) {
         // Set faction_id and title_id to null for all members in the faction
-        String updateMembersSQL = "UPDATE player_data SET faction_id = NULL, title_id = NULL WHERE faction_id = ?";
+        String updateMembersSQL = "UPDATE player_data SET faction_id = NULL, faction_title = NULL WHERE faction_id = ?";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(updateMembersSQL)) {
             preparedStatement.setInt(1, factionId);
@@ -212,120 +300,9 @@ public class FactionDao {
         }
     }
 
-    public boolean hasTitle(UUID playerUUID, String title) {
-        String checkTitleSQL = "SELECT COUNT(*) AS title_count FROM player_titles WHERE player_uuid = ? AND title_name = ?";
-
-        try (PreparedStatement preparedStatement = connection.prepareStatement(checkTitleSQL)) {
-            preparedStatement.setString(1, playerUUID.toString());
-            preparedStatement.setString(2, title);
-
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) {
-                    int titleCount = resultSet.getInt("title_count");
-                    return titleCount > 0;
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return false;
-    }
-
-
-    public String getPlayerTitle(UUID playerUUID) {
-        // Get the title_id associated with the player's UUID
-        int titleId = getTitleIdByPlayerUUID(playerUUID);
-
-        // If the titleId is -1, the player doesn't have a title
-        if (titleId == -1) {
-            return "No Title"; // You can return a default title or handle it as you prefer
-        }
-
-        // Get the title name from the title table based on titleId
-        String getTitleSQL = "SELECT name FROM title WHERE id = ?";
-
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getTitleSQL)) {
-            preparedStatement.setInt(1, titleId);
-
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) {
-                    return resultSet.getString("name");
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        // Return a default title if there's an error or the title is not found
-        return "No Title";
-    }
-
-    public boolean hasPlayerTitle(UUID playerUUID, int titleId) {
-        String checkTitleSQL = "SELECT COUNT(*) AS title_count FROM player_data WHERE player_uuid = ? AND title_id = ?";
-
-        try (PreparedStatement preparedStatement = connection.prepareStatement(checkTitleSQL)) {
-            preparedStatement.setString(1, playerUUID.toString());
-            preparedStatement.setInt(2, titleId);
-
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) {
-                    int titleCount = resultSet.getInt("title_count");
-                    return titleCount > 0; // Player has the title if title_count is greater than 0
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        // Return false if there's an error or the player doesn't have the specified title
-        return false;
-    }
-
-
-    public int getTitleIdByName(String titleName) {
-        String getTitleIdSQL = "SELECT id FROM title WHERE name = ?";
-
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getTitleIdSQL)) {
-            preparedStatement.setString(1, titleName);
-
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) {
-                    return resultSet.getInt("id");
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        // Return -1 by default if there's an error or the title name is not found
-        return -1;
-    }
-
-
-    private int getTitleIdByPlayerUUID(UUID playerUUID) {
-        // Get the title_id associated with the player's UUID from the player_data table
-        String getTitleIdSQL = "SELECT title_id FROM player_data WHERE player_uuid = ?";
-
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getTitleIdSQL)) {
-            preparedStatement.setString(1, playerUUID.toString());
-
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) {
-                    return resultSet.getInt("title_id");
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        // Return -1 by default if there's an error or the player doesn't have a title
-        return -1;
-    }
-
     public void removePlayerFromFaction(UUID playerUUID) {
         // Set faction_id and title_id to NULL for the player in player_data
-        String removePlayerSQL = "UPDATE player_data SET faction_id = NULL, title_id = NULL WHERE player_uuid = ?";
+        String removePlayerSQL = "UPDATE player_data SET faction_id = NULL, faction_title = NULL WHERE player_uuid = ?";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(removePlayerSQL)) {
             preparedStatement.setString(1, playerUUID.toString());
@@ -405,114 +382,49 @@ public class FactionDao {
         return false;
     }
 
-
-    public void setTitleForPlayer(UUID playerUUID, String titleName) {
-        // Get the title_id based on the title name
-        int titleId = getTitleIdByName(titleName);
-
-        if (titleId == -1) {
-            // Title not found; you can handle this as needed, e.g., return an error message
-            return;
-        }
-
-        // Update the player's title_id in player_data
-        String updateTitleSQL = "UPDATE player_data SET title_id = ? WHERE player_uuid = ?";
-
-        try (PreparedStatement preparedStatement = connection.prepareStatement(updateTitleSQL)) {
-            preparedStatement.setInt(1, titleId);
-            preparedStatement.setString(2, playerUUID.toString());
-            preparedStatement.executeUpdate();
+    public boolean hasFactionTitle(UUID player_uuid, String title) {
+        try {
+            String sql = "SELECT * FROM player_data WHERE player_uuid = ? AND faction_title = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                preparedStatement.setString(1, player_uuid.toString());
+                preparedStatement.setString(2, title);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                return resultSet.next(); // Returns true if the player has the specified faction title
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return false; // Return false if there is an error or the player doesn't have the title
     }
 
-    public void removeTitleFromPlayer(UUID playerUUID) {
-        // Set title_id to NULL for the player in player_data
-        String removeTitleSQL = "UPDATE player_data SET title_id = NULL WHERE player_uuid = ?";
-
-        try (PreparedStatement preparedStatement = connection.prepareStatement(removeTitleSQL)) {
-            preparedStatement.setString(1, playerUUID.toString());
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public List<String> getPlayersWithTitlesInFaction(UUID factionOwnerUUID) {
-        List<String> playersWithTitles = new ArrayList<>();
-
-        // Get the faction ID associated with the owner
-        int factionId = getFactionIdByOwner(factionOwnerUUID);
-
-        if (factionId == -1) {
-            // Faction not found or the player is not the owner
-            return playersWithTitles;
-        }
-
-        // Retrieve players in the faction with titles
-        String getPlayersWithTitlesSQL = "SELECT pd.player_name, t.name " +
-                "FROM player_data pd " +
-                "JOIN title t ON pd.title_id = t.id " +
-                "WHERE pd.faction_id = ?";
-
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getPlayersWithTitlesSQL)) {
-            preparedStatement.setInt(1, factionId);
-
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+    public List<UUID> getAllPlayersWithFactionTitle(String title) {
+        List<UUID> playersWithFactionTitle = new ArrayList<>();
+        try {
+            String sql = "SELECT player_uuid FROM player_data WHERE faction_title = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                preparedStatement.setString(1, title);
+                ResultSet resultSet = preparedStatement.executeQuery();
                 while (resultSet.next()) {
-                    String playerName = resultSet.getString("player_name");
-                    String titleName = resultSet.getString("name");
-                    playersWithTitles.add(playerName + " - " + titleName);
+                    playersWithFactionTitle.add(UUID.fromString(resultSet.getString("player_uuid")));
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        return playersWithTitles;
+        return playersWithFactionTitle;
     }
 
-
-
-    public UUID getOwnerUuidByFactionId(int factionId) {
-        String getOwnerUUIDSQL = "SELECT owner_id FROM faction WHERE id = ?";
-
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getOwnerUUIDSQL)) {
-            preparedStatement.setInt(1, factionId);
-
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) {
-                    String ownerUUIDString = resultSet.getString("owner_id");
-                    return UUID.fromString(ownerUUIDString);
-                }
+    public void setFactionTitle(UUID player_uuid, String title) {
+        try {
+            String sql = "UPDATE player_data SET faction_title = ? WHERE player_uuid = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                preparedStatement.setString(1, title);
+                preparedStatement.setString(2, player_uuid.toString());
+                preparedStatement.executeUpdate();
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        // Return null if the faction ID is not found or there's an error
-        return null;
-    }
-
-    public UUID getOwnerUuidByFactionName(String factionName) {
-        String getOwnerUUIDSQL = "SELECT owner_id FROM faction WHERE name = ?";
-
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getOwnerUUIDSQL)) {
-            preparedStatement.setString(1, factionName);
-
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) {
-                    String ownerUUIDString = resultSet.getString("owner_id");
-                    return UUID.fromString(ownerUUIDString);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        // Return null if the faction name is not found or there's an error
-        return null;
     }
 
     public void invitePlayerToJoinFaction(UUID inviterUUID, UUID inviteeUUID, int factionId) {
@@ -528,21 +440,8 @@ public class FactionDao {
         }
     }
 
-    public void rescindInvite(UUID inviterUUID, UUID inviteeUUID, int factionId) {
-        String rescindInviteSQL = "DELETE FROM faction_invites WHERE inviter_uuid = ? AND invitee_uuid = ? AND faction_id = ?";
-
-        try (PreparedStatement preparedStatement = connection.prepareStatement(rescindInviteSQL)) {
-            preparedStatement.setString(1, inviterUUID.toString());
-            preparedStatement.setString(2, inviteeUUID.toString());
-            preparedStatement.setInt(3, factionId);
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
     public void rescindAllInvites(UUID inviteeUUID) {
-        String rescindInviteSQL = "DELETE FROM faction_invites AND invitee_uuid = ?";
+        String rescindInviteSQL = "DELETE FROM faction_invites WHERE invitee_uuid = ?";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(rescindInviteSQL)) {
             preparedStatement.setString(1, inviteeUUID.toString());
@@ -620,40 +519,6 @@ public class FactionDao {
         }
     }
 
-    public void acceptInviteByFactionName(UUID inviteeUUID, String factionName) {
-        // Get the faction ID based on the faction name
-        int factionId = getFactionIdByName(factionName);
-
-        if (factionId == -1) {
-            // Faction not found; you can handle this as needed, e.g., return an error message
-            return;
-        }
-
-        // Check if the invite exists
-        String checkInviteSQL = "SELECT id FROM faction_invites WHERE invitee_uuid = ? AND faction_id = ?";
-        int inviteId = -1; // Initialize inviteId with a default value
-
-        try (PreparedStatement preparedStatement = connection.prepareStatement(checkInviteSQL)) {
-            preparedStatement.setString(1, inviteeUUID.toString());
-            preparedStatement.setInt(2, factionId);
-
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) {
-                    // The invite exists; get its ID
-                    inviteId = resultSet.getInt("id");
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        // If an invite was found, remove it and add the player to the faction
-        if (inviteId != -1) {
-            rescindAllInvites(inviteeUUID); // Pass the inviteId to the rescindInvite function
-            addToFaction(inviteeUUID, factionId); // Implement addToFaction as needed
-        }
-    }
-
     public boolean hasPendingInvitation(UUID inviteeUUID, int factionId) {
         String query = "SELECT COUNT(*) FROM faction_invites WHERE invitee_uuid = ? AND faction_id = ?;";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -670,10 +535,6 @@ public class FactionDao {
         }
         return false;
     }
-
-
-
-
 
     public void addToFaction(UUID playerUUID, int factionId) {
         // Set the player's faction_id in player_data to the specified factionId
@@ -748,7 +609,6 @@ public class FactionDao {
         }
         return null; // Return null if the faction with the provided name was not found
     }
-
     public List<UUID> getFactionMembersByFactionId(int factionId) {
         List<UUID> members = new ArrayList<>();
         String getMembersSQL = "SELECT player_uuid FROM player_data WHERE faction_id = ?";
@@ -818,7 +678,6 @@ public class FactionDao {
         return null;
     }
 
-
     public String getFactionNameByPlayerUUID(UUID playerUUID) {
         String getFactionNameSQL = "SELECT f.name FROM faction f " +
                 "JOIN player_data p ON f.id = p.faction_id " +
@@ -839,11 +698,4 @@ public class FactionDao {
         // Return null if the player's faction name is not found or there's an error
         return null;
     }
-
-
-
-
-
-
-
-    }
+}

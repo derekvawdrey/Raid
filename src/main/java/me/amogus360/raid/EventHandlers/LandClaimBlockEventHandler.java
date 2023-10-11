@@ -8,11 +8,15 @@ import me.amogus360.raid.Utilities.LandClaimChunkUtilities;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Entity;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.hanging.HangingBreakByEntityEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.*;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -25,6 +29,7 @@ public class LandClaimBlockEventHandler implements Listener {
     public LandClaimBlockEventHandler(DataAccessManager dataAccessManager) {
         this.dataAccessManager = dataAccessManager;
     }
+    // TODO: TNT breaks those entities as well. (item frame, armorstand, etc)
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         Location blockLocation = event.getBlock().getLocation();
@@ -33,7 +38,7 @@ public class LandClaimBlockEventHandler implements Listener {
 
         LandClaim landClaim = dataAccessManager.getLandClaimDao().getClaimChunk(blockLocation);
         FactionInfo playerFactionInfo = dataAccessManager.getFactionDao().getFactionInfoByPlayerUUID(event.getPlayer().getUniqueId());
-        int playerFactionId = 0;
+        int playerFactionId = -1;
         if(playerFactionInfo != null){
             playerFactionId = playerFactionInfo.getFactionId();
         }
@@ -45,13 +50,13 @@ public class LandClaimBlockEventHandler implements Listener {
     }
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
+        //TODO: They can still place water and lava
         Location blockLocation = event.getBlock().getLocation();
-        LandClaimChunkUtilities.convertToChunkCoordinate(blockLocation);
         // Check if the player's faction owns the land at the block location
 
         LandClaim landClaim = dataAccessManager.getLandClaimDao().getClaimChunk(blockLocation);
         FactionInfo playerFactionInfo = dataAccessManager.getFactionDao().getFactionInfoByPlayerUUID(event.getPlayer().getUniqueId());
-        int playerFactionId = 0;
+        int playerFactionId = -1;
         if(playerFactionInfo != null){
             playerFactionId = playerFactionInfo.getFactionId();
         }
@@ -60,7 +65,141 @@ public class LandClaimBlockEventHandler implements Listener {
             MessageManager.sendMessage(event.getPlayer(),"You can't place blocks in another faction's territory!");
         }
     }
-    // Implement lava flow/water flow prevention, tnt/creeper explosion prevention
+
+    @EventHandler
+    public void onBucketUse(PlayerBucketEmptyEvent event) {
+        Location blockLocation = event.getBlockClicked().getLocation();
+
+        LandClaim landClaim = dataAccessManager.getLandClaimDao().getClaimChunk(blockLocation);
+        FactionInfo playerFactionInfo = dataAccessManager.getFactionDao().getFactionInfoByPlayerUUID(event.getPlayer().getUniqueId());
+        int playerFactionId = -1;
+        if(playerFactionInfo != null){
+            playerFactionId = playerFactionInfo.getFactionId();
+        }
+        if (landClaim != null && playerFactionId != landClaim.getFactionId()) {
+            event.setCancelled(true); // Cancel the block break event
+            MessageManager.sendMessage(event.getPlayer(),"You can't place blocks in another faction's territory!");
+        }
+    }
+
+    @EventHandler
+    public void onBucketFill(PlayerBucketFillEvent event) {
+
+            Location blockLocation = event.getBlockClicked().getLocation();
+
+            LandClaim landClaim = dataAccessManager.getLandClaimDao().getClaimChunk(blockLocation);
+            FactionInfo playerFactionInfo = dataAccessManager.getFactionDao().getFactionInfoByPlayerUUID(event.getPlayer().getUniqueId());
+            int playerFactionId = -1;
+            if(playerFactionInfo != null){
+                playerFactionId = playerFactionInfo.getFactionId();
+            }
+            if (landClaim != null && playerFactionId != landClaim.getFactionId()) {
+                event.setCancelled(true); // Cancel the block break event
+                MessageManager.sendMessage(event.getPlayer(),"You can't place blocks in another faction's territory!");
+            }
+    }
+
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        if( event.getClickedBlock() != null) {
+            Location blockLocation = event.getClickedBlock().getLocation();
+
+            LandClaim landClaim = dataAccessManager.getLandClaimDao().getClaimChunk(blockLocation);
+            FactionInfo playerFactionInfo = dataAccessManager.getFactionDao().getFactionInfoByPlayerUUID(event.getPlayer().getUniqueId());
+            int playerFactionId = -1;
+            if (playerFactionInfo != null) {
+                playerFactionId = playerFactionInfo.getFactionId();
+            }
+            if (landClaim != null && playerFactionId != landClaim.getFactionId()) {
+                event.setCancelled(true); // Cancel the block break event
+                MessageManager.sendMessage(event.getPlayer(), "You can't place blocks in another faction's territory!");
+            }
+        }
+    }
+
+    @EventHandler
+    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+        if (event.getEntity() instanceof ItemFrame || event.getEntity() instanceof ArmorStand) {
+            // Check if the entity being damaged is an ItemFrame or ArmorStand
+            Entity damager = event.getDamager();
+
+            // Check if the damager is a player or a projectile fired by a player
+            if (damager instanceof Player || (damager instanceof Projectile && ((Projectile) damager).getShooter() instanceof Player)) {
+                Player playerDamager;
+
+                if (damager instanceof Player) {
+                    playerDamager = (Player) damager;
+                } else {
+                    playerDamager = (Player) ((Projectile) damager).getShooter();
+                }
+
+                Location entityLocation = event.getEntity().getLocation();
+                LandClaim landClaim = dataAccessManager.getLandClaimDao().getClaimChunk(entityLocation);
+                FactionInfo playerFactionInfo = dataAccessManager.getFactionDao().getFactionInfoByPlayerUUID(playerDamager.getUniqueId());
+                if (landClaim != null) {
+                    if( playerFactionInfo.getFactionId() != landClaim.getFactionId() || playerFactionInfo == null) {
+                        event.setCancelled(true); // Cancel the damage event
+                        MessageManager.sendMessage(playerDamager, "You can't harm harmless entities in another faction's territory!");
+                    }
+                }
+            }
+        }
+    }
+
+
+    @EventHandler
+    public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
+
+        if (event.getRightClicked() instanceof ItemFrame || event.getRightClicked() instanceof ArmorStand) {
+            Player player = event.getPlayer();
+            // Check if the player has permission to modify item frames
+            Location blockLocation = event.getRightClicked().getLocation();
+
+            LandClaim landClaim = dataAccessManager.getLandClaimDao().getClaimChunk(blockLocation);
+            FactionInfo playerFactionInfo = dataAccessManager.getFactionDao().getFactionInfoByPlayerUUID(event.getPlayer().getUniqueId());
+            int playerFactionId = -1;
+            if (playerFactionInfo != null) {
+                playerFactionId = playerFactionInfo.getFactionId();
+            }
+            if (landClaim != null && playerFactionId != landClaim.getFactionId()) {
+                event.setCancelled(true); // Cancel the block break event
+                MessageManager.sendMessage(event.getPlayer(), "You can't place blocks in another faction's territory!");
+            }
+        }
+    }
+
+    @EventHandler
+    // TODO: Fix breaking of armor stands item frame
+    public void onHangingBreakByEntity(HangingBreakByEntityEvent event) {
+        if (event.getEntity() instanceof ItemFrame || event.getEntity() instanceof ArmorStand) {
+            // Check if the entity being damaged is an ItemFrame or ArmorStand
+            Entity damager = event.getRemover();
+
+            // Check if the damager is a player or a projectile fired by a player
+            if (damager instanceof Player || (damager instanceof Projectile && ((Projectile) damager).getShooter() instanceof Player)) {
+                Player playerDamager;
+
+                if (damager instanceof Player) {
+                    playerDamager = (Player) damager;
+                } else {
+                    playerDamager = (Player) ((Projectile) damager).getShooter();
+                }
+
+                Location entityLocation = event.getEntity().getLocation();
+                LandClaim landClaim = dataAccessManager.getLandClaimDao().getClaimChunk(entityLocation);
+                FactionInfo playerFactionInfo = dataAccessManager.getFactionDao().getFactionInfoByPlayerUUID(playerDamager.getUniqueId());
+                if (landClaim != null) {
+                    if( playerFactionInfo.getFactionId() != landClaim.getFactionId() || playerFactionInfo == null) {
+                        event.setCancelled(true); // Cancel the damage event
+                        MessageManager.sendMessage(playerDamager, "You can't harm harmless entities in another faction's territory!");
+                    }
+                }
+            }
+        }
+    }
+
+
+
 
     @EventHandler
     public void onEntityExplode(EntityExplodeEvent event) {
@@ -115,6 +254,7 @@ public class LandClaimBlockEventHandler implements Listener {
         if (!dataAccessManager.getLandClaimDao().isClaimed(event.getBlock().getLocation())) {
             // Iterate through the blocks that the piston is trying to move
             for (Block block : event.getBlocks()) {
+
                 // Check if the destination block is claimed
                 if (dataAccessManager.getLandClaimDao().isClaimed(block.getLocation())) {
                     event.setCancelled(true); // Cancel the piston extension
@@ -138,6 +278,7 @@ public class LandClaimBlockEventHandler implements Listener {
             }
         }
     }
+
 
 
 }

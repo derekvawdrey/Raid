@@ -1,8 +1,6 @@
 package me.amogus360.raid.Tasks;
 
-import me.amogus360.raid.DAO.BossBarDataAccess;
 import me.amogus360.raid.DataAccessManager;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class BossBarUpdateTask {

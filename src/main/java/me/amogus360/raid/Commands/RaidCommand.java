@@ -1,7 +1,8 @@
 package me.amogus360.raid.Commands;
 
+import me.amogus360.raid.CommandManager.CommandManager;
 import me.amogus360.raid.MessageManager;
-import me.amogus360.raid.RaidCommandManager;
+import me.amogus360.raid.CommandManager.RaidCommandManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -15,7 +16,7 @@ public abstract class RaidCommand {
         this.usage = usage;
     }
 
-    public abstract void execute(CommandSender sender, String[] args, RaidCommandManager commandManager);
+    public abstract void execute(CommandSender sender, String[] args, CommandManager commandManager);
     public void tellUsage(CommandSender sender){
         MessageManager.sendMessage(sender,"Usage: " + this.usage);
     }

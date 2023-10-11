@@ -8,10 +8,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class BossBarDataAccess {
+public class BossBarDao {
     private Map<UUID, RaidBossBar> bossBars;
 
-    public BossBarDataAccess() {
+    public BossBarDao() {
         this.bossBars = new HashMap<>();
     }
 

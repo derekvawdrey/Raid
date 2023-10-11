@@ -11,7 +11,9 @@ public class DataAccessManager {
     private final PlayerAccountDao playerAccountDao;
     private final LandClaimDao landClaimDao;
     private final BlockInfoDao blockInfoDao;
-    private final BossBarDataAccess bossBarDataAccess;
+    private final BossBarDao bossBarDataAccess;
+
+    private final RaidDao raidDao;
 
     private final JavaPlugin plugin;
     public DataAccessManager(Connection connection, JavaPlugin plugin){
@@ -19,7 +21,8 @@ public class DataAccessManager {
         this.playerAccountDao = new PlayerAccountDao(connection);
         this.landClaimDao = new LandClaimDao(connection);
         this.blockInfoDao = new BlockInfoDao(connection);
-        this.bossBarDataAccess = new BossBarDataAccess();
+        this.bossBarDataAccess = new BossBarDao();
+        this.raidDao = new RaidDao(connection);
         this.plugin = plugin;
     }
 
@@ -38,5 +41,8 @@ public class DataAccessManager {
     }
 
     public BlockInfoDao getBlockInfoDao(){ return blockInfoDao;}
-    public BossBarDataAccess getBossBarDataAccess(){return bossBarDataAccess;}
+    public BossBarDao getBossBarDataAccess(){return bossBarDataAccess;}
+    public RaidDao getRaidDao() {
+        return raidDao;
+    }
 }

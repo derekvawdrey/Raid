@@ -54,6 +54,7 @@ public class BlockUtilities {
         Map<String,World> worldMap = new HashMap<String,World>();
         Map<BlockInfo, World> blockInfoToBlockMap = new HashMap<>();
         System.out.println("Starting block place");
+        //TODO: Set block material data
         // Here we will prevent loading worlds more than 1 time
         for(BlockInfo blockInfo : blockInfoArray ){
             // Make sure we aren't loading a world every time we deserialize a blockInfo block

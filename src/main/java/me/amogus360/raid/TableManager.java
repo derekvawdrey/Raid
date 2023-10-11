@@ -1,10 +1,14 @@
 package me.amogus360.raid;
+import me.amogus360.raid.Model.FactionInfo;
+
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class TableManager {
@@ -23,10 +27,11 @@ public class TableManager {
         createPlayerDataTable();
         createFactionTable();
         createMoneyDataTable();
-        createTitleTable();
         createFactionInvitesTable();
         createLandClaimsTable();
         createBlockInfoTable();
+        createRaidsTable();
+        createRaidParticipantsTable();
     }
 
     private boolean tableExists(String tableName) throws SQLException {
@@ -38,6 +43,7 @@ public class TableManager {
 
     private void createPlayerDataTable() {
         try {
+            //TODO: Remove table for titles and simply assign title string
             if (!tableExists("player_data")) {
                 try (Statement statement = connection.createStatement()) {
                     String createTableSQL = "CREATE TABLE player_data (" +
@@ -45,26 +51,8 @@ public class TableManager {
                             "player_uuid TEXT NOT NULL," +
                             "player_name TEXT NOT NULL," +
                             "faction_id INTEGER," + // Reference to the faction
-                            "title_id INTEGER," +   // Reference to the title
-                            "FOREIGN KEY (faction_id) REFERENCES faction (id)," +
-                            "FOREIGN KEY (title_id) REFERENCES title (id)" +
-                            ");";
-
-                    statement.executeUpdate(createTableSQL);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void createTitleTable() {
-        try {
-            if (!tableExists("title")) {
-                try (Statement statement = connection.createStatement()) {
-                    String createTableSQL = "CREATE TABLE title (" +
-                            "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                            "name TEXT NOT NULL" +
+                            "faction_title TEXT," +   // Reference to the title
+                            "FOREIGN KEY (faction_id) REFERENCES faction (id)" +
                             ");";
 
                     statement.executeUpdate(createTableSQL);
@@ -104,32 +92,15 @@ public class TableManager {
                             "name TEXT NOT NULL," +
                             "owner_id INTEGER," +
                             "money INT DEFAULT 0," + // Add a money column with a default value of 0
+                            "spawn_x DOUBLE NOT NULL, " +
+                            "spawn_y DOUBLE NOT NULL, " +
+                            "spawn_z DOUBLE NOT NULL, " +
+                            "spawn_world TEXT NOT NULL, " +
+                            "raid_boss_x DOUBLE NOT NULL, " +
+                            "raid_boss_y DOUBLE NOT NULL, " +
+                            "raid_boss_z DOUBLE NOT NULL, " +
+                            "raid_boss_world TEXT NOT NULL, " +
                             "FOREIGN KEY (owner_id) REFERENCES player_data (id)" +
-                            ");";
-
-                    statement.executeUpdate(createTableSQL);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void createNPCDataTable() {
-        try {
-            if (!tableExists("npc_data")) {
-                try (Statement statement = connection.createStatement()) {
-                    String createTableSQL = "CREATE TABLE npc_data (" +
-                            "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                            "name TEXT NOT NULL," +
-                            "npc_id INTEGER NOT NULL," +
-                            "faction_id INTEGER NOT NULL," +
-                            "npc_title VARCHAR(255) CHECK (npc_title IN ('Mayor', 'Support')) NOT NULL," +
-                            "x DOUBLE NOT NULL," +
-                            "y DOUBLE NOT NULL," +
-                            "z DOUBLE NOT NULL," +
-                            "world VARCHAR(255) NOT NULL," + // Add the "world" column
-                            "FOREIGN KEY (faction_id) REFERENCES faction (id)" +
                             ");";
 
                     statement.executeUpdate(createTableSQL);
@@ -206,6 +177,51 @@ public class TableManager {
             e.printStackTrace();
         }
     }
+
+    private void createRaidsTable() {
+        try {
+            if (!tableExists("raids")) {
+                try (Statement statement = connection.createStatement()) {
+                    String createTableSQL = "CREATE TABLE raids (" +
+                            "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                            "attacking_faction_id INTEGER NOT NULL," +
+                            "defending_faction_id INTEGER NOT NULL," +
+                            "in_progress INTEGER DEFAULT 0," +
+                            "start_time DATETIME NOT NULL," +
+                            "end_time DATETIME NOT NULL," +
+                            "FOREIGN KEY (attacking_faction_id) REFERENCES faction (id)," +
+                            "FOREIGN KEY (defending_faction_id) REFERENCES faction (id)" +
+                            ");";
+
+                    statement.executeUpdate(createTableSQL);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void createRaidParticipantsTable() {
+        try {
+            if (!tableExists("raid_participants")) {
+                try (Statement statement = connection.createStatement()) {
+                    String createTableSQL = "CREATE TABLE raid_participants (" +
+                            "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                            "raid_id INTEGER NOT NULL," +
+                            "faction_id INTEGER NOT NULL," +
+                            "FOREIGN KEY (raid_id) REFERENCES raids (id)," +
+                            "FOREIGN KEY (faction_id) REFERENCES faction (id)" +
+                            ");";
+
+                    statement.executeUpdate(createTableSQL);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 
 
 

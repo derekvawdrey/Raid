@@ -1,9 +1,10 @@
 package me.amogus360.raid.Commands.Faction;
 
+import me.amogus360.raid.CommandManager.CommandManager;
 import me.amogus360.raid.Commands.RaidCommand;
 import me.amogus360.raid.DataAccessManager;
 import me.amogus360.raid.MessageManager;
-import me.amogus360.raid.RaidCommandManager;
+import me.amogus360.raid.CommandManager.RaidCommandManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -17,7 +18,7 @@ public class CreateFactionCommand extends RaidCommand {
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args, RaidCommandManager commandManager) {
+    public void execute(CommandSender sender, String[] args, CommandManager commandManager) {
         if (!(sender instanceof Player)) {
             MessageManager.sendMessage(sender,"Only players can use this command.");
             return;
@@ -43,7 +44,7 @@ public class CreateFactionCommand extends RaidCommand {
                 // Create a new faction
                 //TODO: Make it so you can't make a faction right by another faction, right now it doesnt work
                 if(!dataAccessManager.getLandClaimDao().nearbyClaimedArea(player.getLocation(),6)) {
-                    int factionId = dataAccessManager.getFactionDao().createFaction(playerUUID, factionName);
+                    int factionId = dataAccessManager.getFactionDao().createFaction(playerUUID, factionName, player.getLocation());
                     dataAccessManager.getFactionDao().addToFaction(playerUUID,factionName);
                     dataAccessManager.getLandClaimDao().claimLand(factionId,player.getLocation());
                     MessageManager.sendMessage(player, "Faction created successfully!");

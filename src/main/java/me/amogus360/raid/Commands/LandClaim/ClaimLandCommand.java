@@ -1,10 +1,11 @@
-package me.amogus360.raid.Commands.Faction.Claim;
+package me.amogus360.raid.Commands.LandClaim;
 
+import me.amogus360.raid.CommandManager.CommandManager;
 import me.amogus360.raid.Commands.RaidCommand;
 import me.amogus360.raid.DataAccessManager;
 import me.amogus360.raid.MessageManager;
 import me.amogus360.raid.Model.LandClaim.LandClaim;
-import me.amogus360.raid.RaidCommandManager;
+import me.amogus360.raid.CommandManager.RaidCommandManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -17,7 +18,7 @@ public class ClaimLandCommand extends RaidCommand {
         super(plugin, usage);
     }
     @Override
-    public void execute(CommandSender sender, String[] args, RaidCommandManager commandManager) {
+    public void execute(CommandSender sender, String[] args, CommandManager commandManager) {
         if (!(sender instanceof Player)) {
             MessageManager.sendMessage(sender,"Only players can use this command.");
             return;
@@ -33,7 +34,7 @@ public class ClaimLandCommand extends RaidCommand {
             return;
         }
 
-        if (!dataAccessManager.getFactionDao().isPlayerFactionOwner(playerUUID) && !dataAccessManager.getFactionDao().hasTitle(playerUUID, "officer")) {
+        if (!dataAccessManager.getFactionDao().isPlayerFactionOwner(playerUUID) && !dataAccessManager.getFactionDao().hasFactionTitle(playerUUID, "officer")) {
             MessageManager.sendMessage(player,"Only the faction owner or officers can claim land.");
             return;
         }

@@ -28,6 +28,17 @@ public class LandClaimDao {
         }
     }
 
+    public void removeAllLandClaimsByFactionId(int factionId){
+        String removeClaimSQL = "DELETE FROM land_claims WHERE faction_id = ?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(removeClaimSQL)) {
+            preparedStatement.setInt(1, factionId);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public List<LandClaim> getLandClaimsWithFactionInRadius(Location centerLocation, int radius) {
         List<LandClaim> landClaims = new ArrayList<>();
         Location convertedChunkCoordinate = LandClaimChunkUtilities.convertToChunkCoordinate(centerLocation);
@@ -200,6 +211,30 @@ public class LandClaimDao {
         return false;
     }
 
+    public boolean isClaimedByFactionId(Location location, int factionId) {
+        Location convertedChunkCoordinate = LandClaimChunkUtilities.convertToChunkCoordinate(location);
+        int chunk_x = (int) convertedChunkCoordinate.getX();
+        int chunk_y = (int) convertedChunkCoordinate.getY();
+        int chunk_z = (int) convertedChunkCoordinate.getZ();
+        String querySQL = "SELECT COUNT(*) AS claim_count FROM land_claims WHERE chunk_x = ? AND chunk_z = ? AND chunk_world = ? AND faction_id = ?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(querySQL)) {
+            preparedStatement.setInt(1, chunk_x);
+            preparedStatement.setInt(2, chunk_z);
+            preparedStatement.setString(3, convertedChunkCoordinate.getWorld().getName());
+            preparedStatement.setInt(4, factionId);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    int claimCount = resultSet.getInt("claim_count");
+                    return claimCount > 0;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
 
 
     public LandClaim claimLand(int factionId, Location location) {

@@ -1,17 +1,13 @@
-package me.amogus360.raid.Commands;
-import me.amogus360.raid.DataAccessManager;
+package me.amogus360.raid.Commands.Raid;
+import me.amogus360.raid.CommandManager.CommandManager;
+import me.amogus360.raid.Commands.RaidCommand;
 import me.amogus360.raid.MessageManager;
 import me.amogus360.raid.Model.FactionInfo;
-import me.amogus360.raid.Model.RaidBossBar;
-import me.amogus360.raid.RaidCommandManager;
+import me.amogus360.raid.CommandManager.RaidCommandManager;
 import me.amogus360.raid.Utilities.RaidBossUtilities;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class MobTest extends RaidCommand {
@@ -20,8 +16,9 @@ public class MobTest extends RaidCommand {
         super(plugin, usage);
     }
 
+    //TODO: for rewarding what do we do if a player (who is a friend with another player) purposefully suffocates their entity so the raiding faction gets the resources
     @Override
-    public void execute(CommandSender sender, String[] args, RaidCommandManager commandManager) {
+    public void execute(CommandSender sender, String[] args, CommandManager commandManager) {
         if (!(sender instanceof Player)) {
             MessageManager.sendMessage(sender,"Only players can use this command.");
             return;
