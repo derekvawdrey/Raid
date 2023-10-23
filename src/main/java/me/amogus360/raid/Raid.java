@@ -7,6 +7,7 @@ import me.amogus360.raid.Commands.Raid.RaidStart;
 import me.amogus360.raid.EventHandlers.LandClaimBlockEventHandler;
 import me.amogus360.raid.EventHandlers.PlayerJoinEventHandler;
 import me.amogus360.raid.EventHandlers.RaidBossEventHandler;
+import me.amogus360.raid.EventHandlers.RaidToolsEventHandler;
 import me.amogus360.raid.Tasks.BlockReplacementTask;
 import me.amogus360.raid.Tasks.BossBarUpdateTask;
 import me.amogus360.raid.Tasks.RaidStartEndTask;
@@ -60,6 +61,8 @@ public class Raid extends JavaPlugin implements Listener {
         pluginManager.registerEvents(new PlayerJoinEventHandler(this.dataAccessManager), this);
         pluginManager.registerEvents(new LandClaimBlockEventHandler(this.dataAccessManager), this);
         pluginManager.registerEvents(new RaidBossEventHandler(this.dataAccessManager), this);
+        pluginManager.registerEvents(new RaidToolsEventHandler(this.dataAccessManager), this);
+
     }
 
     @Override

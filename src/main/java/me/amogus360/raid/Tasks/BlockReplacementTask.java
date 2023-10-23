@@ -31,13 +31,12 @@ public class BlockReplacementTask extends BukkitRunnable {
         // Retrieve blocks that need to be replaced
         List<BlockInfo> blocksToReplace = dataAccessManager.getBlockInfoDao().getAndDeleteBlocksToReplace(currentTime);
         BlockUtilities.placeBlockArray(blocksToReplace);
-        MessageManager.sendGlobalMessage(this.plugin, "Starting block replacement");
     }
 
     public static void startTask(JavaPlugin plugin, DataAccessManager dataAccessManager) {
         // Run the task every 30 minutes
         BlockReplacementTask cleanupTask = new BlockReplacementTask(plugin, dataAccessManager);
-        cleanupTask.runTaskTimer(plugin, 0L, 20L * 60L * 30L);
+        cleanupTask.runTaskTimer(plugin, 0L, 10L);
     }
 
 }

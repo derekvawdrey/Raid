@@ -53,12 +53,10 @@ public class BlockUtilities {
     public static void placeBlockArray(List<BlockInfo> blockInfoArray){
         Map<String,World> worldMap = new HashMap<String,World>();
         Map<BlockInfo, World> blockInfoToBlockMap = new HashMap<>();
-        System.out.println("Starting block place");
         //TODO: Set block material data
         // Here we will prevent loading worlds more than 1 time
         for(BlockInfo blockInfo : blockInfoArray ){
             // Make sure we aren't loading a world every time we deserialize a blockInfo block
-
                 String worldName = blockInfo.getWorldName();
                 if(!worldMap.containsKey(worldName)) worldMap.put(worldName, Bukkit.getWorld(worldName));
 
@@ -80,8 +78,13 @@ public class BlockUtilities {
 
         Location blockLocation = new Location(world,x,y,z);
         Material material = Material.getMaterial(blockInfo.getMaterial());
-        BlockChanger.setBlockAsynchronously(blockLocation, new ItemStack(material), false);
-        world.getBlockAt(x,y,z).setBlockData(Bukkit.createBlockData(blockInfo.getBlockData()));
+        if(material != Material.AIR) {
+            ItemStack block = new ItemStack(material);
+            block.setData(blockInfo.getBlockData());
+            BlockChanger.setBlockAsynchronously(blockLocation, block, false);
+
+            world.getBlockAt(x, y, z).setBlockData(Bukkit.createBlockData(blockInfo.getBlockData()));
+        }
         //return null;
     }
 

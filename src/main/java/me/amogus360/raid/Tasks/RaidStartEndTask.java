@@ -25,9 +25,9 @@ public class RaidStartEndTask extends BukkitRunnable {
         LocalDateTime currentTime = LocalDateTime.now();
 
         // Get ongoing raids
-        List<RaidInfo> ongoingRaids = dataAccessManager.getRaidDao().getOngoingRaids(currentTime);
+        List<RaidInfo> toStartRaids = dataAccessManager.getRaidDao().getTimeToStartRaids(currentTime);
 
-        for (RaidInfo raid : ongoingRaids) {
+        for (RaidInfo raid : toStartRaids) {
             // Handle ongoing raids (e.g., update status, check for completion, etc.)
             // You can add your logic here
             // For example, you might want to check if a raid is completed based on some conditions.
@@ -49,7 +49,7 @@ public class RaidStartEndTask extends BukkitRunnable {
 
     public static void startTask(JavaPlugin plugin, DataAccessManager dataAccessManager) {
         // Run the task periodically (adjust the interval as needed)
-        int intervalTicks = 20 * 60; // 60 seconds
+        int intervalTicks = 20 * 20; // 60 seconds
         new RaidStartEndTask(dataAccessManager, plugin).runTaskTimer(plugin, 0, intervalTicks);
     }
 }

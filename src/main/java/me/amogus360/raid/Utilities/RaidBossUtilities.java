@@ -12,6 +12,8 @@ import org.bukkit.entity.Ravager;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -26,6 +28,11 @@ public class RaidBossUtilities {
         entity.setMaxHealth(100);
         entity.setHealth(100);
         entity.setRemoveWhenFarAway(false);
+
+        PotionEffect regenerationEffect = new PotionEffect(PotionEffectType.REGENERATION, 200000000, 1);
+
+
+        entity.addPotionEffect(regenerationEffect);
 
         int factionId = faction_id; // Replace with the actual faction ID
         String metadataKey = "faction_id";

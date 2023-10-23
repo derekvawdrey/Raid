@@ -18,32 +18,36 @@ public class DeleteFactionCommand extends RaidCommand {
 
     @Override
     public void execute(CommandSender sender, String[] args, CommandManager commandManager) {
-
-        // TODO (NOT YET): If the faction is disbanded, end the raid without giving awards? and delete the raid boss
         if (!(sender instanceof Player)) {
-            MessageManager.sendMessage(sender,"Only players can use this command.");
+            MessageManager.sendMessage(sender, "Only players can use this command.");
             return;
         }
 
         Player player = (Player) sender;
         UUID playerUUID = player.getUniqueId();
         DataAccessManager dataAccessManager = commandManager.getDataAccessManager();
+
         // Check if the player is not in a faction
         if (!dataAccessManager.getFactionDao().isPlayerInFaction(playerUUID)) {
-            MessageManager.sendMessage(player,"You are not currently in a faction.");
+            MessageManager.sendMessage(player, "You are not currently in a faction.");
             return;
         }
 
-        if(dataAccessManager.getFactionDao().isPlayerFactionOwner(playerUUID)) {
-            // Remove the player from their current faction
-            dataAccessManager.getLandClaimDao().removeAllLandClaimsByFactionId(dataAccessManager.getFactionDao().getFactionIdByPlayerUUID(playerUUID));
-            dataAccessManager.getFactionDao().deleteFaction(playerUUID);
+        // Check if the player is the owner of the faction
+        if (dataAccessManager.getFactionDao().isPlayerFactionOwner(playerUUID)) {
+            int factionId = dataAccessManager.getFactionDao().getFactionIdByPlayerUUID(playerUUID);
 
-            MessageManager.sendMessage(player, "You have deleted your faction.");
-            return;
-        }else{
-            MessageManager.sendMessage(player, "You are not the owner of the faction, and can't delete it.");
-            return;
+            // Check if there is an ongoing raid for the faction
+            if (dataAccessManager.getRaidDao().isFactionInOngoingRaid(factionId)) {
+                MessageManager.sendMessage(player, "You cannot delete the faction while it is involved in a raid.");
+            } else {
+                // Remove the player from their current faction and delete it
+                dataAccessManager.getLandClaimDao().removeAllLandClaimsByFactionId(factionId);
+                dataAccessManager.getFactionDao().deleteFaction(playerUUID);
+                MessageManager.sendMessage(player, "You have deleted your faction.");
+            }
+        } else {
+            MessageManager.sendMessage(player, "You are not the owner of the faction and can't delete it.");
         }
     }
 }

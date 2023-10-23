@@ -1,6 +1,7 @@
 package me.amogus360.raid.EventHandlers;
 
 import me.amogus360.raid.DataAccessManager;
+import me.amogus360.raid.MessageManager;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -31,6 +32,15 @@ public class RaidBossEventHandler implements Listener {
                 if (entity.isDead()) {
                     dataAccessManager.getBossBarDataAccess().removeAllPlayersFromBossBar(entity.getUniqueId());
                     dataAccessManager.getBossBarDataAccess().removeBossBar(entity.getUniqueId());
+
+                    List<MetadataValue> metadata = entity.getMetadata("faction_id");
+
+                    if (!metadata.isEmpty() && metadata.get(0).value() instanceof Integer) {
+                        int entityFactionId = metadata.get(0).asInt();
+                        dataAccessManager.getRaidDao().updateBossKilled(entityFactionId,true);
+                    }
+
+                    MessageManager.sendGlobalMessage(dataAccessManager.getPlugin(), event.getEntity().getCustomName() + " has been defeated!");
                 }
             }
         }

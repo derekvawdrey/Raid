@@ -38,7 +38,6 @@ public class BlockInfoDao {
     }
 
     public List<BlockInfo> getAndDeleteBlocksToReplace(Timestamp restorationTimestamp) {
-        System.out.println("Retrieving blocks");
         List<BlockInfo> blocksToReplace = new ArrayList<>();
         List<Integer> blockIdsToDelete = new ArrayList<>();
 
@@ -66,7 +65,6 @@ public class BlockInfoDao {
 
         // Delete the fetched blocks based on their IDs
         deleteBlocksByIds(blockIdsToDelete);
-        System.out.println("Finished blocks");
         return blocksToReplace;
     }
 

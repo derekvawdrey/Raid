@@ -25,43 +25,46 @@ public class RaidStart extends RaidCommand {
     @Override
     public void execute(CommandSender sender, String[] args, CommandManager commandManager) {
         if (!(sender instanceof Player)) {
-            MessageManager.sendMessage(sender,"Only players can use this command.");
+            MessageManager.sendMessage(sender, "Only players can use this command.");
             return;
         }
 
-
-        if(args.length != 1){
+        if (args.length != 1) {
             this.tellUsage(sender);
+            return;
         }
+
         Player player = (Player) sender;
-        if(!commandManager.getDataAccessManager().getFactionDao().isPlayerFactionOwner(player.getUniqueId())
-                && !commandManager.getDataAccessManager().getFactionDao().hasFactionTitle(player.getUniqueId(), "officer")){
+        if (!commandManager.getDataAccessManager().getFactionDao().isPlayerFactionOwner(player.getUniqueId()) &&
+                !commandManager.getDataAccessManager().getFactionDao().hasFactionTitle(player.getUniqueId(), "officer")) {
             MessageManager.sendMessage(player, "You are not an officer or owner of a faction, you can't declare a raid!");
+            return;
         }
 
         String factionName = args[0];
         FactionInfo factionInfo = commandManager.getDataAccessManager().getFactionDao().getFactionInfoByName(factionName);
         FactionInfo raiderFactionInfo = commandManager.getDataAccessManager().getFactionDao().getFactionInfoByPlayerUUID(player.getUniqueId());
-        //TODO: check if the faction has already been raided today.
-        //TODO: Check if the person is someone who can declare a raid
-        //TODO: add a tax to the player to start the raid
-        //TODO: Stop someone from declaring a raid on themselves
-        //TODO: Stop another raid from being decalred at the same time
-        if(factionInfo != null && raiderFactionInfo != null){
-            LocalDateTime currentDateTime = LocalDateTime.now();
-            TemporalAmount duration = java.time.Duration.of(2, ChronoUnit.MINUTES);
-            TemporalAmount duration_end = java.time.Duration.of(4, ChronoUnit.MINUTES);
-            // Calculate the future date and time
-            LocalDateTime futureDateTime = currentDateTime.plus(duration);
+
+        if (factionInfo != null && raiderFactionInfo != null) {
+            if (factionInfo.getFactionName().equals(raiderFactionInfo.getFactionName())) {
+                MessageManager.sendMessage(sender, "You can't declare a raid against yourself!");
+                return;
+            }
+
+
+            // Check if a raid has already been declared against the target faction
+            if (commandManager.getDataAccessManager().getRaidDao().isRaidDeclared(factionInfo.getFactionId())) {
+                MessageManager.sendMessage(sender, "A raid has already been declared against " + factionInfo.getFactionName() + ". You cannot declare another one.");
+                return;
+            }
 
 
             MessageManager.sendGlobalMessage(plugin, "The faction " + raiderFactionInfo.getFactionName() + " has declared a raid on " + factionInfo.getFactionName());
-            MessageManager.sendGlobalMessage(plugin, "The raid will begin 15 minutes from now, if other factions want to join do /raid join [faction_name].");
-            commandManager.getDataAccessManager().getRaidDao().addRaid(raiderFactionInfo.getFactionId(), factionInfo.getFactionId(), currentDateTime.plus(duration).toString(), currentDateTime.plus(duration_end).toString());
-
+            MessageManager.sendGlobalMessage(plugin, "The raid will begin 15 minutes from now, if other factions want to join, do /raid join [faction_name].");
+            commandManager.getDataAccessManager().getRaidDao().addRaid(raiderFactionInfo.getFactionId(), factionInfo.getFactionId(), commandManager.getDataAccessManager().getRaidDao().getTimeToStartRaid().toString(), commandManager.getDataAccessManager().getRaidDao().getTimeToEndRaid().toString());
         }
-
     }
+
 
 
 }

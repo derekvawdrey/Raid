@@ -16,6 +16,7 @@ public class UpdateSpawnLocationCommand extends RaidCommand {
     public UpdateSpawnLocationCommand(JavaPlugin plugin, String usage) {
         super(plugin, usage);
     }
+    // TODO: Stop a user from changing the spawn during a raid
     @Override
     public void execute(CommandSender sender, String[] args, CommandManager commandManager) {
         if (!(sender instanceof Player)) {

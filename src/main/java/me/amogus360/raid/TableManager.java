@@ -187,6 +187,7 @@ public class TableManager {
                             "attacking_faction_id INTEGER NOT NULL," +
                             "defending_faction_id INTEGER NOT NULL," +
                             "in_progress INTEGER DEFAULT 0," +
+                            "boss_killed INTEGER DEFAULT 0," +
                             "start_time DATETIME NOT NULL," +
                             "end_time DATETIME NOT NULL," +
                             "FOREIGN KEY (attacking_faction_id) REFERENCES faction (id)," +

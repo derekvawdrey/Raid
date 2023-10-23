@@ -1,6 +1,7 @@
 package me.amogus360.raid.CommandManager;
 
 import me.amogus360.raid.Commands.Raid.MobTest;
+import me.amogus360.raid.Commands.Raid.RaidJoin;
 import me.amogus360.raid.Commands.Raid.RaidStart;
 import me.amogus360.raid.DataAccessManager;
 import me.amogus360.raid.MessageManager;
@@ -33,6 +34,8 @@ public class RaidCommandManager extends CommandManager {
             new MobTest(plugin, "/raid mob").execute(sender, newArgs, this);
         }else if(subcommand.equals("start")){
             new RaidStart(plugin, "/raid start [faction_name]").execute(sender, newArgs, this);
+        }else if(subcommand.equals("join")){
+            new RaidJoin(plugin, "/raid join [faction_name]").execute(sender, newArgs, this);
         }
 
         else {

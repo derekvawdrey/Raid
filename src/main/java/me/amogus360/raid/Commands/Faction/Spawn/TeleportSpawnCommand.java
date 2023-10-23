@@ -15,6 +15,7 @@ public class TeleportSpawnCommand extends RaidCommand {
     public TeleportSpawnCommand(JavaPlugin plugin, String usage) {
         super(plugin, usage);
     }
+    //TODO: Implement a 5 second before move timer
     @Override
     public void execute(CommandSender sender, String[] args, CommandManager commandManager) {
         if (!(sender instanceof Player)) {

@@ -4,6 +4,7 @@ import me.amogus360.raid.DataAccessManager;
 import me.amogus360.raid.MessageManager;
 import me.amogus360.raid.Model.FactionInfo;
 import me.amogus360.raid.Model.LandClaim.LandClaim;
+import me.amogus360.raid.Utilities.BlockUtilities;
 import me.amogus360.raid.Utilities.LandClaimChunkUtilities;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -207,6 +208,13 @@ public class LandClaimBlockEventHandler implements Listener {
 
         if (entity == null) {
             return;
+        }
+
+        if (entity instanceof TNTPrimed) {
+            TNTPrimed tnt = (TNTPrimed) entity;
+            if (tnt.hasMetadata("TntLauncher")) {
+                return;
+            }
         }
 
         Location explosionLocation = entity.getLocation();
