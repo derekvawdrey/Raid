@@ -12,8 +12,10 @@ import org.bukkit.block.Chest;
 import org.bukkit.block.ShulkerBox;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Item;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.MaterialData;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
@@ -38,6 +40,7 @@ public class BlockUtilities {
 
         if (block.getState() instanceof InventoryHolder) {
             InventoryHolder holder = (InventoryHolder) block.getState();
+            Inventory inventory = holder.getInventory();
             blockInfo.setChestContents(new ArrayList<>());
 
             for (ItemStack item : holder.getInventory().getContents()) {
@@ -45,6 +48,9 @@ public class BlockUtilities {
                     blockInfo.getChestContents().add(item.clone());
                 }
             }
+            // Stop the chest from spitting out its contents, stopping dupping from occuring
+            inventory.clear();
+
         }
 
 
@@ -57,11 +63,10 @@ public class BlockUtilities {
         // Here we will prevent loading worlds more than 1 time
         for(BlockInfo blockInfo : blockInfoArray ){
             // Make sure we aren't loading a world every time we deserialize a blockInfo block
-                String worldName = blockInfo.getWorldName();
-                if(!worldMap.containsKey(worldName)) worldMap.put(worldName, Bukkit.getWorld(worldName));
-
-                placeBlock(blockInfo, worldMap.get(worldName));
-                if(blockInfo.getChestContents() != null && !blockInfo.getChestContents().isEmpty()) blockInfoToBlockMap.put(blockInfo,worldMap.get(worldName));
+            String worldName = blockInfo.getWorldName();
+            if(!worldMap.containsKey(worldName)) worldMap.put(worldName, Bukkit.getWorld(worldName));
+            placeBlock(blockInfo, worldMap.get(worldName));
+            if(blockInfo.getChestContents() != null && !blockInfo.getChestContents().isEmpty()) blockInfoToBlockMap.put(blockInfo,worldMap.get(worldName));
         }
 
         blockInfoToBlockMap.forEach((key, value) -> {
@@ -78,12 +83,14 @@ public class BlockUtilities {
 
         Location blockLocation = new Location(world,x,y,z);
         Material material = Material.getMaterial(blockInfo.getMaterial());
+        BlockData blockData = Bukkit.createBlockData(blockInfo.getBlockData());
         if(material != Material.AIR) {
-            ItemStack block = new ItemStack(material);
-            block.setData(blockInfo.getBlockData());
-            BlockChanger.setBlockAsynchronously(blockLocation, block, false);
+            // This is a faster method but I need to figure out how to support BlockData
+            // ItemStack block = new ItemStack(material);
+            // BlockChanger.setBlockAsynchronously(blockLocation, block, false);
 
-            world.getBlockAt(x, y, z).setBlockData(Bukkit.createBlockData(blockInfo.getBlockData()));
+            // TODO: Test and see if this actually works.
+            world.setBlockData(blockLocation,blockData);
         }
         //return null;
     }

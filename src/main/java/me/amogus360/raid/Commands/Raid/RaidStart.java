@@ -25,7 +25,14 @@ public class RaidStart extends RaidCommand {
     @Override
     public void execute(CommandSender sender, String[] args, CommandManager commandManager) {
         if (!(sender instanceof Player)) {
-            MessageManager.sendMessage(sender, "Only players can use this command.");
+            String factionName = args[0];
+            FactionInfo factionInfo = commandManager.getDataAccessManager().getFactionDao().getFactionInfoByName(factionName);
+
+            if (factionInfo != null) {
+                MessageManager.sendGlobalMessage(plugin, "God has declared a raid on " + factionInfo.getFactionName());
+                MessageManager.sendGlobalMessage(plugin, "The raid will begin 15 minutes from now, if other factions want to join, do /raid join [faction_name].");
+                commandManager.getDataAccessManager().getRaidDao().addRaid(0, factionInfo.getFactionId(), commandManager.getDataAccessManager().getRaidDao().getTimeToStartRaid().toString(), commandManager.getDataAccessManager().getRaidDao().getTimeToEndRaid().toString());
+            }
             return;
         }
 
@@ -62,6 +69,8 @@ public class RaidStart extends RaidCommand {
             MessageManager.sendGlobalMessage(plugin, "The faction " + raiderFactionInfo.getFactionName() + " has declared a raid on " + factionInfo.getFactionName());
             MessageManager.sendGlobalMessage(plugin, "The raid will begin 15 minutes from now, if other factions want to join, do /raid join [faction_name].");
             commandManager.getDataAccessManager().getRaidDao().addRaid(raiderFactionInfo.getFactionId(), factionInfo.getFactionId(), commandManager.getDataAccessManager().getRaidDao().getTimeToStartRaid().toString(), commandManager.getDataAccessManager().getRaidDao().getTimeToEndRaid().toString());
+        }else{
+            MessageManager.sendMessage(player, "That faction doesn't exist");
         }
     }
 

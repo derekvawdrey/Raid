@@ -6,7 +6,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 
 public class LandClaimChunkUtilities {
-    public static int landClaimSize = 8;
+    public static int landClaimSize = 12;
     public static Location convertToChunkCoordinate(Location location){
         int chunk_x = (int) Math.floor((double) location.getBlockX() / (double)landClaimSize);
         int chunk_y = (int) Math.floor((double) location.getBlockY() / (double)landClaimSize);

@@ -22,7 +22,7 @@ public class RaidDao {
 
     public LocalDateTime getTimeToStartRaid(){
         LocalDateTime currentDateTime = LocalDateTime.now();
-        TemporalAmount duration = java.time.Duration.of(2, ChronoUnit.MINUTES);
+        TemporalAmount duration = java.time.Duration.of(1, ChronoUnit.MINUTES);
         return currentDateTime.plus(duration);
     }
     public LocalDateTime getTimeToEndRaid(){
