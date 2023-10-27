@@ -74,9 +74,6 @@ public class RaidToolsEventHandler implements Listener {
         if (entity instanceof TNTPrimed) {
             TNTPrimed tnt = (TNTPrimed) entity;
 
-
-
-
             if (tnt.hasMetadata("RaidingTnt")) {
                 // Create a list to store blocks that should be removed from the explosion
                 List<Block> blocksToNotDestroy = new ArrayList<>();
@@ -94,7 +91,6 @@ public class RaidToolsEventHandler implements Listener {
                     }else{
                         if(RaidToolsUtils.isBlockToRemove(block.getType()) && block.getType() != Material.AIR){
                             additionalBlocksToRegen.add(block);
-
                         }else{
                             if(tnt.hasMetadata("NoDestroy")){
                                 blocksToNotDestroy.add(block);

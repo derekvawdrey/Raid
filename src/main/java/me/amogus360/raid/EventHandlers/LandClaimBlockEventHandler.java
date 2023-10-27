@@ -212,7 +212,7 @@ public class LandClaimBlockEventHandler implements Listener {
 
         if (entity instanceof TNTPrimed) {
             TNTPrimed tnt = (TNTPrimed) entity;
-            if (tnt.hasMetadata("TntLauncher")) {
+            if (tnt.hasMetadata("RaidingTnt")) {
                 return;
             }
         }
