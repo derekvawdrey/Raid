@@ -50,7 +50,7 @@ public class RaidToolsEventHandler implements Listener {
     }
 
     @EventHandler
-    public void TntLauncherCode(PlayerInteractEvent event) {
+    public void RaidingWeapons(PlayerInteractEvent event) {
         if (event.getAction().name().contains("RIGHT") && event.hasItem()) {
             ItemStack item = event.getItem();
             if (item.hasItemMeta()) {
@@ -77,7 +77,7 @@ public class RaidToolsEventHandler implements Listener {
 
 
 
-            if (tnt.hasMetadata("TntLauncher")) {
+            if (tnt.hasMetadata("RaidingTnt")) {
                 // Create a list to store blocks that should be removed from the explosion
                 List<Block> blocksToNotDestroy = new ArrayList<>();
                 List<Block> blocksToDestroy = new ArrayList<>();
@@ -124,14 +124,10 @@ public class RaidToolsEventHandler implements Listener {
     @EventHandler
     public void preventDamageInRaidFromTnt(EntityDamageByEntityEvent event) {
         if (event.getDamager() instanceof TNTPrimed) {
-            if (event.getDamager().hasMetadata("TntLauncher")) {
-
-                event.setDamage(0);
-
-                if(event.getDamager().hasMetadata("Hurt1")){
-                    event.setDamage(1);
+            if (event.getDamager().hasMetadata("RaidingTnt")) {
+                if(event.getDamager().hasMetadata("Damage")){
+                    event.setDamage((int)event.getDamager().getMetadata("Damage").get(0).value());
                 }
-
             }
         }
     }

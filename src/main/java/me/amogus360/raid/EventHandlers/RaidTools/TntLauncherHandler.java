@@ -10,6 +10,9 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class TntLauncherHandler implements WeaponHandler {
 
     private final DataAccessManager dataAccessManager;
@@ -35,14 +38,13 @@ public class TntLauncherHandler implements WeaponHandler {
     }
 
     private void launchTNT(Location location, Vector direction) {
-        // Create TNT entity with a custom metadata tag
-        location.setY(location.getY()-1);
-        TNTPrimed primed_tnt = location.getWorld().spawn(location, TNTPrimed.class, tnt -> {
-            tnt.setVelocity(direction.multiply(2)); // Adjust the multiplier to control TNT velocity
-            tnt.setFuseTicks(40); // Adjust this value as needed
-        });
+        int fuseTicks = 40;
 
-        // Add a custom metadata tag to the TNT entity
-        primed_tnt.setMetadata("TntLauncher", new FixedMetadataValue(dataAccessManager.getPlugin(), true));
+        Map<String, Object> customMetadata = new HashMap<>();
+        customMetadata.put("RaidingTnt", true);
+        customMetadata.put("Damage", 0);
+
+        createTnt(location, direction, 1, 0.0, fuseTicks, customMetadata, dataAccessManager);
     }
+
 }

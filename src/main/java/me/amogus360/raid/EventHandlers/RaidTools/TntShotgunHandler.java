@@ -10,6 +10,9 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class TntShotgunHandler implements WeaponHandler {
 
 
@@ -35,21 +38,15 @@ public class TntShotgunHandler implements WeaponHandler {
     }
 
     private void launchTNTShotgun(Location location, Vector direction) {
-        int numProjectiles = 3; // Number of TNT projectiles in the shotgun
-        double spreadAngle = 60.0; // The angle of the spread in degrees
-        location.setY(location.getY()-1);
-        for (int i = 0; i < numProjectiles; i++) {
-            double spread = Math.toRadians((Math.random() - 0.5) * spreadAngle);
-            double x = direction.getX() * Math.cos(spread) - direction.getZ() * Math.sin(spread);
-            double z = direction.getX() * Math.sin(spread) + direction.getZ() * Math.cos(spread);
-            Vector spreadDirection = new Vector(x, 0, z);
+        int numProjectiles = 3;
+        double spreadAngle = 60.0;
+        int fuseTicks = 40 + (int)(Math.random() * 49 + 1);
 
-            TNTPrimed primed_tnt = location.getWorld().spawn(location, TNTPrimed.class, tnt -> {
-                tnt.setVelocity(spreadDirection.multiply(2)); // Adjust the multiplier to control TNT velocity
-                tnt.setFuseTicks(40 + (int)(Math.random() * 49 + 1)); // Adjust this value as needed
-            });
+        Map<String, Object> customMetadata = new HashMap<>();
+        customMetadata.put("RaidingTnt", true);
+        customMetadata.put("Damage", 0);
 
-            primed_tnt.setMetadata("TntLauncher", new FixedMetadataValue(dataAccessManager.getPlugin(), true));
-        }
+        createTnt(location, direction, numProjectiles, spreadAngle, fuseTicks, customMetadata, dataAccessManager);
     }
+
 }
