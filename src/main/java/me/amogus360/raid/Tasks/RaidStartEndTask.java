@@ -4,6 +4,7 @@ import me.amogus360.raid.DataAccessManager;
 import me.amogus360.raid.MessageManager;
 import me.amogus360.raid.Model.RaidInfo;
 import me.amogus360.raid.Utilities.RaidBossUtilities;
+import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -32,7 +33,7 @@ public class RaidStartEndTask extends BukkitRunnable {
             // You can add your logic here
             // For example, you might want to check if a raid is completed based on some conditions.
             MessageManager.sendGlobalMessage(this.plugin, "The raid on faction " + raid.getDefendingFactionName() + " has started!");
-            RaidBossUtilities.createRaidBoss(dataAccessManager, dataAccessManager.getFactionDao().getRaidBossLocation(raid.getDefendingFactionId()), raid.getDefendingFactionId(), "Faction God");
+            RaidBossUtilities.createRaidBoss(dataAccessManager, dataAccessManager.getFactionDao().getRaidBossLocation(raid.getDefendingFactionId()), raid.getDefendingFactionId(), ChatColor.GREEN + "Mayor of " + ChatColor.RED + raid.getDefendingFactionName());
             dataAccessManager.getRaidDao().startRaid(raid.getRaidId());
         }
 

@@ -123,7 +123,7 @@ public class TableManager {
                     String createTableSQL = "CREATE TABLE money_data (" +
                             "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                             "player_id INTEGER," +
-                            "money INT DEFAULT 0," +
+                            "money INT DEFAULT 500," +
                             "FOREIGN KEY (player_id) REFERENCES player_data (id)" +
                             ");";
 

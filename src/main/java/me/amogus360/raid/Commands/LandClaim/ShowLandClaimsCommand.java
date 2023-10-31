@@ -32,7 +32,7 @@ public class ShowLandClaimsCommand extends RaidCommand {
 
         int landClaimSize = LandClaimChunkUtilities.landClaimSize;
         int yRange = 4; // The range around the player's Y position
-
+        String factionName = "";
         // Iterate through claimed chunks and spawn particles at their edges
         for (LandClaim claimedChunk : claimedChunks) {
             LandClaimLocation claimedChunkLocation = claimedChunk.getLocation();
@@ -65,12 +65,18 @@ public class ShowLandClaimsCommand extends RaidCommand {
                 }
             }
 
+
+            factionName = claimedChunk.getFactionString();
             // Add an extra particle at the highest Y coordinate to indicate continuation upwards
             int highestY = (int) player.getLocation().getY() + yRange + 1;
             double particleX = chunk_x * landClaimSize + 0.5;
             double particleY = highestY + 0.5;
             double particleZ = chunk_z * landClaimSize + 0.5;
             player.spawnParticle(Particle.HEART, particleX, particleY, particleZ, 1, 0, 0, 0, 0.5);
+        }
+
+        if(!factionName.equals("")){
+            MessageManager.sendMessage(player, "Nearest faction is: " + factionName);
         }
     }
 

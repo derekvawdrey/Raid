@@ -22,7 +22,7 @@ public class RaidDao {
 
     public LocalDateTime getTimeToStartRaid(){
         LocalDateTime currentDateTime = LocalDateTime.now();
-        TemporalAmount duration = java.time.Duration.of(1, ChronoUnit.MINUTES);
+        TemporalAmount duration = java.time.Duration.of(15, ChronoUnit.MINUTES);
         return currentDateTime.plus(duration);
     }
     public LocalDateTime getTimeToEndRaid(){
@@ -87,10 +87,9 @@ public class RaidDao {
     }
 
     public boolean isFactionInOngoingRaid(int factionId) {
-        String sql = "SELECT COUNT(*) FROM raids WHERE (attacking_faction_id = ? OR defending_faction_id = ?) AND in_progress = 1";
+        String sql = "SELECT COUNT(*) FROM raids WHERE (defending_faction_id = ?) AND in_progress = 1";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, factionId);
-            statement.setInt(2, factionId);
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
                     int count = resultSet.getInt(1);
@@ -288,6 +287,30 @@ public class RaidDao {
             int rowsUpdated = preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+    }
+
+    private boolean isRaidBossDead(int raidId) {
+        try {
+            String query = "SELECT boss_killed FROM raids WHERE id = ?";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setInt(1, raidId);
+
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        int bossKilled = resultSet.getInt("boss_killed");
+                        return bossKilled == 1;
+                    } else {
+                        // Raid with the specified ID not found
+                        return false;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Handle the exception appropriately
+            return false;
         }
     }
 

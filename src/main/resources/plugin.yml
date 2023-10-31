@@ -10,12 +10,88 @@ commands:
     aliases: [r]
   faction:
     description: Main command for factions
-    usage: /raid <subcommand>
+    usage: /faction <subcommand>
     aliases: [ r ]
   money:
     description: Main command for money
-    usage: /raid <subcommand>
+    usage: /money <subcommand>
     aliases: [ r ]
-
-
-
+  item:
+    description: Main command for item
+    usage: /item <subcommand>
+    aliases: [ r ]
+permissions:
+  factionsrevived:
+    description: Factions Revived permissions
+  factionsrevived.raid:
+    description: Raid permissions
+    children:
+      factionsrevived.raid.mob:
+        description: Allows players to summon a raid boss of their faction
+        default: false
+      factionsrevived.raid.join:
+        description: Allows players to join a raid
+        default: true
+      factionsrevived.raid.start:
+        description: Allows players to start a raid
+        default: true
+  factionsrevived.money:
+    description: Money-related permissions
+    children:
+      factionsrevived.money.add:
+        description: Allows players to give players money
+        default: false
+      factionsrevived.money.show:
+        description: Allows players to show their money status
+        default: true
+      factionsrevived.money.send:
+        description: Allows players to transfer money to different players
+        default: true
+  factionsrevived.faction:
+    description: Faction-related permissions
+    children:
+      factionsrevived.faction.create:
+        description: Allows you to create a faction
+        default: true
+      factionsrevived.faction.info:
+        description: Gets the info of the faction
+        default: true
+      factionsrevived.faction.land.claim:
+        description: Allows a faction to claim land
+        default: true
+      factionsrevived.faction.land.show:
+        description: Shows land claims of a faction
+        default: true
+      factionsrevived.faction.invite.send:
+        description: Sends an invitation to a player
+        default: true
+      factionsrevived.faction.invite.accept:
+        description: Accepts an invitation to a faction
+        default: true
+      factionsrevived.faction.invite.show:
+        description: Shows a list of pending invitations
+        default: true
+      factionsrevived.faction.leave:
+        description: Allows a player to leave a faction
+        default: true
+      factionsrevived.faction.delete:
+        description: Deletes a faction
+        default: true
+      factionsrevived.faction.setspawn:
+        description: Sets the faction's spawn location
+        default: true
+      factionsrevived.faction.setbosslocation:
+        description: Sets the location of the faction's boss
+        default: true
+      factionsrevived.faction.spawn:
+        description: Teleports to the faction's spawn
+        default: true
+  factionsrevived.item:
+    description: Item-related permissions
+    children:
+      factionsrevived.item.shop:
+        description: Allows users to open the item shop
+        default: true
+      factionsrevived.item.enhance:
+        description: Allows users to open the item enhance gui
+        default: true

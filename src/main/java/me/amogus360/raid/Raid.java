@@ -1,22 +1,28 @@
 package me.amogus360.raid;
 
+import mc.obliviate.inventory.InventoryAPI;
 import me.amogus360.raid.CommandManager.FactionCommandManager;
+import me.amogus360.raid.CommandManager.ItemCommandManager;
 import me.amogus360.raid.CommandManager.MoneyCommandManager;
 import me.amogus360.raid.CommandManager.RaidCommandManager;
-import me.amogus360.raid.Commands.Raid.RaidStart;
 import me.amogus360.raid.EventHandlers.LandClaimBlockEventHandler;
 import me.amogus360.raid.EventHandlers.PlayerJoinEventHandler;
 import me.amogus360.raid.EventHandlers.RaidBossEventHandler;
-import me.amogus360.raid.EventHandlers.RaidToolsEventHandler;
+import me.amogus360.raid.EventHandlers.ItemUseEventHandler;
+import me.amogus360.raid.Model.ItemGlow;
 import me.amogus360.raid.Tasks.BlockReplacementTask;
 import me.amogus360.raid.Tasks.BossBarUpdateTask;
+import me.amogus360.raid.Tasks.JobTask;
 import me.amogus360.raid.Tasks.RaidStartEndTask;
+import org.bukkit.NamespacedKey;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -29,6 +35,7 @@ public class Raid extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
+
         getLogger().info("Plugin enabled!");
 
         setupDatabase();
@@ -36,23 +43,25 @@ public class Raid extends JavaPlugin implements Listener {
         tableManager.createTables();
 
         dataAccessManager = new DataAccessManager(connection, this);
-
         initCommands();
         initEvents();
         initTasks();
-
+        registerGlow();
+        new InventoryAPI(this).init();
     }
 
     private void initCommands(){
         getCommand("raid").setExecutor(new RaidCommandManager(this, this.dataAccessManager));
         getCommand("money").setExecutor(new MoneyCommandManager(this, this.dataAccessManager));
         getCommand("faction").setExecutor(new FactionCommandManager(this, this.dataAccessManager));
+        getCommand("item").setExecutor(new ItemCommandManager(this, this.dataAccessManager));
     }
 
     private void initTasks(){
         BlockReplacementTask.startTask(this, this.dataAccessManager);
         BossBarUpdateTask.startTask(this,this.dataAccessManager);
         RaidStartEndTask.startTask(this, this.dataAccessManager);
+        JobTask.startTask(this, this.dataAccessManager);
     }
 
     private void initEvents(){
@@ -61,7 +70,7 @@ public class Raid extends JavaPlugin implements Listener {
         pluginManager.registerEvents(new PlayerJoinEventHandler(this.dataAccessManager), this);
         pluginManager.registerEvents(new LandClaimBlockEventHandler(this.dataAccessManager), this);
         pluginManager.registerEvents(new RaidBossEventHandler(this.dataAccessManager), this);
-        pluginManager.registerEvents(new RaidToolsEventHandler(this.dataAccessManager), this);
+        pluginManager.registerEvents(new ItemUseEventHandler(this.dataAccessManager), this);
 
     }
 
@@ -93,6 +102,29 @@ public class Raid extends JavaPlugin implements Listener {
             // Create tables and perform other database setup here
             // For example: createTable();
         } catch (ClassNotFoundException | SQLException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void registerGlow() {
+        try {
+            Field f = Enchantment.class.getDeclaredField("acceptingNew");
+            f.setAccessible(true);
+            f.set(null, true);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            NamespacedKey key = new NamespacedKey(this, getDescription().getName());
+
+            ItemGlow glow = new ItemGlow(key);
+            Enchantment.registerEnchantment(glow);
+        }
+        catch (IllegalArgumentException e){
+        }
+        catch(Exception e){
             e.printStackTrace();
         }
     }

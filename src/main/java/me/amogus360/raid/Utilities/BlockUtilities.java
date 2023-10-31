@@ -80,7 +80,7 @@ public class BlockUtilities {
         int y = blockInfo.getY();
         int z = blockInfo.getZ();
 
-
+        // TOOD: If a block is destroyed with tnt, the curbed stairs wont be curved as they will default to non-curved stairs
         Location blockLocation = new Location(world,x,y,z);
         Material material = Material.getMaterial(blockInfo.getMaterial());
         BlockData blockData = Bukkit.createBlockData(blockInfo.getBlockData());

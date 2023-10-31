@@ -1,13 +1,12 @@
-package me.amogus360.raid.EventHandlers.RaidTools;
+package me.amogus360.raid.Model.RaidTools.Enhancements;
 
 import me.amogus360.raid.DataAccessManager;
-import me.amogus360.raid.EventHandlers.RaidToolsUtils.RaidToolsUtils;
+import me.amogus360.raid.Model.RaidTools.WeaponHandler;
+import me.amogus360.raid.Utilities.RaidToolsUtils;
 import me.amogus360.raid.MessageManager;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
 import java.util.HashMap;
@@ -15,29 +14,23 @@ import java.util.Map;
 
 public class TntLauncherHandler implements WeaponHandler {
 
-    private final DataAccessManager dataAccessManager;
-
-    public TntLauncherHandler(DataAccessManager dataAccessManager) {
-        this.dataAccessManager = dataAccessManager;
-    }
-
 
     // Implement the TntLauncher logic
     @Override
-    public void handle(PlayerInteractEvent event) {
+    public void handle(DataAccessManager dataAccessManager, PlayerInteractEvent event, int level) {
         Player player = event.getPlayer();
         if (RaidToolsUtils.hasTNT(player)) {
             RaidToolsUtils.consumeTNT(player);
             Location location = player.getEyeLocation();
             Vector direction = location.getDirection();
-            launchTNT(location, direction);
+            launchTNT(dataAccessManager,location, direction);
 
         } else {
             MessageManager.sendMessage(player, "You don't have enough TNT!");
         }
     }
 
-    private void launchTNT(Location location, Vector direction) {
+    private void launchTNT(DataAccessManager dataAccessManager, Location location, Vector direction) {
         int fuseTicks = 40;
 
         Map<String, Object> customMetadata = new HashMap<>();
@@ -45,6 +38,11 @@ public class TntLauncherHandler implements WeaponHandler {
         customMetadata.put("Damage", 0);
 
         createTnt(location, direction, 1, 0.0, fuseTicks, customMetadata, dataAccessManager);
+    }
+
+    @Override
+    public String getActivationLore() {
+        return itemChatColor(this.getItemCategory()) + "Tnt Cannon";
     }
 
 }

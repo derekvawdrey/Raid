@@ -47,6 +47,9 @@ public abstract class CommandManager implements CommandExecutor {
         RaidCommand subCommand = subCommands.get(subCommandName.toString());
         if (subCommand != null) {
             // Execute the subcommand and remove the used args
+            if(!sender.hasPermission("factionsrevived." + this.baseCommand + "." + subCommandName.toString().replace(" ", "."))) {
+                MessageManager.sendMessage(sender, "You don't have permission to run this command");
+            }
             subCommand.execute(sender, Arrays.copyOfRange(args, 1, args.length), this);
             return true;
         }
@@ -58,7 +61,10 @@ public abstract class CommandManager implements CommandExecutor {
             subCommand = subCommands.get(subCommandName.toString());
             if (subCommand != null) {
                 // Execute the subcommand and remove the used args
-                subCommand.execute(sender, Arrays.copyOfRange(args, i, args.length), this);
+                if(!sender.hasPermission("factionsrevived." + this.baseCommand + "." + subCommandName.toString().replace(" ", "."))) {
+                    MessageManager.sendMessage(sender, "You don't have permission to run this command");
+                }
+                subCommand.execute(sender, Arrays.copyOfRange(args, i+1, args.length), this);
                 return true;
             }
         }
@@ -69,14 +75,22 @@ public abstract class CommandManager implements CommandExecutor {
     }
 
     private void listAvailableSubcommands(CommandSender sender, String subcommandPrefix) {
-        MessageManager.sendMessage(sender, "Available subcommands for /" + this.baseCommand + " " + subcommandPrefix + ":");
+        Map<String, String> availableSubcommands = new HashMap<>();
 
         for (String subCommand : subCommands.keySet()) {
-            if (subCommand.startsWith(subcommandPrefix)) {
-                MessageManager.sendMessage(sender, "  - /"+ this.baseCommand + " " + subCommand);
+            if (subCommand.startsWith(subcommandPrefix) && sender.hasPermission("factionsrevived." + this.baseCommand + "." + subCommand)) {
+                availableSubcommands.put(subCommand, "  - /" + this.baseCommand + " " + subCommand);
             }
         }
+
+        if (!availableSubcommands.isEmpty()) {
+            MessageManager.sendMessage(sender, "Available subcommands for /" + this.baseCommand + " " + subcommandPrefix + ":");
+            availableSubcommands.values().forEach(message -> MessageManager.sendMessage(sender, message));
+        } else {
+            MessageManager.sendMessage(sender, "There are no subcommands for /" + this.baseCommand + " " + subcommandPrefix + ".");
+        }
     }
+
 
 
     protected String[] removeOneArg(String[] args) {
