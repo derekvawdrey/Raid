@@ -6,11 +6,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 public class MessageManager {
+    public static enum MessageType{
+        ERROR,
+        BAD_PERMISSION,
 
+    }
     // Method to send a prefixed message to a CommandSender
     public static void sendMessage(CommandSender sender, String message) {
-        String prefix = ChatColor.DARK_RED + "[" + ChatColor.GOLD + "Raid" + ChatColor.DARK_RED + "]" + ChatColor.RESET;
-        String styledMessage = ChatColor.YELLOW + ">> " + ChatColor.WHITE + message + ChatColor.YELLOW + " <<";
+        String prefix = getPluginPrefixColors("Factions Revived");
+        String styledMessage = ChatColor.WHITE + message + ChatColor.YELLOW + " <<";
         sender.sendMessage(prefix + " " + styledMessage);
     }
 
@@ -22,5 +26,14 @@ public class MessageManager {
         for(Player player: plugin.getServer().getOnlinePlayers()){
             sendMessage(player, message);
         }
+    }
+
+    public static String getPluginPrefixColors(String stringName){
+        String prefix = ChatColor.WHITE + "[" + ChatColor.GOLD + stringName + ChatColor.WHITE + "]" + ChatColor.RESET;
+        return prefix;
+    }
+
+    public static void sendMessageBasedOnType(Player player, MessageType messageType){
+
     }
 }

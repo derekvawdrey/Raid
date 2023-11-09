@@ -24,12 +24,12 @@ public class RaidBossUtilities {
     public static void createRaidBoss(DataAccessManager dataAccessManager, Location location, int faction_id, String name){
 
         location.getChunk().load();
-        LivingEntity entity = (LivingEntity) location.getWorld().spawnEntity(location, EntityType.WITHER_SKELETON);
+        LivingEntity entity = (LivingEntity) location.getWorld().spawnEntity(location, EntityType.IRON_GOLEM);
 
         entity.setCustomName(name);
         entity.setCustomNameVisible(true);
-        entity.setMaxHealth(200);
-        entity.setHealth(200);
+        entity.setMaxHealth(300);
+        entity.setHealth(300);
         entity.setRemoveWhenFarAway(false);
 
         PotionEffect regenerationEffect = new PotionEffect(PotionEffectType.SPEED, 200000000, 2);

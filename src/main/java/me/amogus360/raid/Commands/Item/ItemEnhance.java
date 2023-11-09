@@ -4,7 +4,6 @@ import me.amogus360.raid.CommandManager.CommandManager;
 import me.amogus360.raid.Commands.RaidCommand;
 import me.amogus360.raid.MessageManager;
 import me.amogus360.raid.Model.Gui.ItemEnhanceGui;
-import me.amogus360.raid.Model.Gui.RaidShopGui;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;

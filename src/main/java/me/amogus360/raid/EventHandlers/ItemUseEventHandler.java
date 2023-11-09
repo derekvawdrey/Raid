@@ -1,11 +1,11 @@
 package me.amogus360.raid.EventHandlers;
 
 import me.amogus360.raid.DataAccessManager;
-import me.amogus360.raid.Model.RaidTools.Enhancements.TntJumperHandler;
-import me.amogus360.raid.Model.RaidTools.Enhancements.TntLauncherHandler;
-import me.amogus360.raid.Model.RaidTools.Enhancements.TntShotgunHandler;
-import me.amogus360.raid.Model.RaidTools.SpecialItems.SummonSkeletonDefender;
-import me.amogus360.raid.Model.RaidTools.WeaponHandler;
+import me.amogus360.raid.Model.Items.Raiding.TntJumperHandler;
+import me.amogus360.raid.Model.Items.Raiding.TntLauncherHandler;
+import me.amogus360.raid.Model.Items.Raiding.TntShotgunHandler;
+import me.amogus360.raid.Model.Items.Defending.SummonSkeletonDefender;
+import me.amogus360.raid.Model.Items.ItemHandler;
 import me.amogus360.raid.Utilities.DefenderUtilities;
 import me.amogus360.raid.Utilities.RaidToolsUtils;
 import me.amogus360.raid.Model.LoreLevelInformation;
@@ -29,7 +29,7 @@ import java.util.Map;
 
 public class ItemUseEventHandler implements Listener {
     private final DataAccessManager dataAccessManager;
-    private final Map<String, WeaponHandler> weaponHandlers;
+    private final Map<String, ItemHandler> weaponHandlers;
 
     public ItemUseEventHandler(DataAccessManager dataAccessManager) {
         this.dataAccessManager = dataAccessManager;
@@ -156,7 +156,7 @@ public class ItemUseEventHandler implements Listener {
     }
     public boolean isLocationBelow(Location location1, Location location2) {
         // Check if location1 is below location2
-        return location1.getY() < location2.getY();
+        return location2.getY() < location1.getY();
     }
 
 

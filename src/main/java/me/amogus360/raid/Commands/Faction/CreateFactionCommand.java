@@ -5,10 +5,11 @@ import me.amogus360.raid.Commands.RaidCommand;
 import me.amogus360.raid.DataAccessManager;
 import me.amogus360.raid.MessageManager;
 import me.amogus360.raid.CommandManager.RaidCommandManager;
+import me.amogus360.raid.Utilities.GeneralUtilities;
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-
 import java.util.UUID;
 
 public class CreateFactionCommand extends RaidCommand {
@@ -36,6 +37,11 @@ public class CreateFactionCommand extends RaidCommand {
         if (dataAccessManager.getFactionDao().isPlayerInFaction(playerUUID)) {
             MessageManager.sendMessage(player,"You are already in a faction.");
         } else {
+
+            if(GeneralUtilities.isPlayerNearSpawn(player,plugin)){
+                MessageManager.sendMessage(player, "You can't create a faction near spawn!");
+                return;
+            }
             // Check if the faction name already exists
             String factionName = args[0];
             if (dataAccessManager.getFactionDao().isFactionNameTaken(factionName)) {

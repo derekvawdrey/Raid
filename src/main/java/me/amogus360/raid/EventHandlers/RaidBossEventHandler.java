@@ -26,7 +26,7 @@ public class RaidBossEventHandler implements Listener {
         if(event.getEntity() instanceof LivingEntity) {
             // Remove the boss bar and
             Entity entity = event.getEntity();
-            if (entity.hasMetadata("faction_id") && !entity.hasMetadata("defender")) {
+            if (entity.hasMetadata("faction_id")) {
                 LivingEntity livingEntity = (LivingEntity) event.getEntity();
                 if (entity.isDead()) {
                     dataAccessManager.getBossBarDataAccess().removeAllPlayersFromBossBar(entity.getUniqueId());
@@ -69,8 +69,6 @@ public class RaidBossEventHandler implements Listener {
                         if(entity.hasMetadata("defender")){
                             livingEntity.damage(event.getDamage());
                             Location location = entity.getLocation();
-                            randomLightningStrike(location);
-                            randomEndermanTeleport(location);
                             randomSkeletonArmy(location);
                             randomZombieHoard(location);
                             randomWitchPotionThrow(location);
@@ -82,25 +80,6 @@ public class RaidBossEventHandler implements Listener {
         }
     }
 
-    private void randomLightningStrike(Location location){
-        double chance = Math.random();
-        if (chance <= 0.10) { // 10% chance (0.10 = 10%)
-            // Create a lightning strike at a random location around the entity
-            double x = location.getX() + (Math.random() - 0.5) * 10; // Random X offset
-            double z = location.getZ() + (Math.random() - 0.5) * 10; // Random Z offset
-            double y = location.getWorld().getHighestBlockYAt((int) x, (int) z); // Get the highest block's Y-coordinate at the location
-
-            LightningStrike lightningStrike = location.getWorld().strikeLightning(new Location(location.getWorld(), x, y, z));
-        }
-    }
-    public static void randomEndermanTeleport(Location location) {
-        double chance = Math.random();
-        if (chance <= 0.1) {
-            // Create an enderman entity at the given location and make it teleport randomly
-            Entity enderman = location.getWorld().spawn(location, Enderman.class);
-            ((Enderman) enderman).teleport(location.clone().add(Math.random() * 10 - 5, 0, Math.random() * 10 - 5));
-        }
-    }
 
     public static void randomWitchPotionThrow(Location location) {
         double chance = Math.random();

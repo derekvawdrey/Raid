@@ -3,7 +3,7 @@ package me.amogus360.raid.Commands.Item;
 import me.amogus360.raid.CommandManager.CommandManager;
 import me.amogus360.raid.Commands.RaidCommand;
 import me.amogus360.raid.MessageManager;
-import me.amogus360.raid.Model.Gui.RaidShopGui;
+import me.amogus360.raid.Model.Gui.ItemShopGui;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -22,7 +22,7 @@ public class ItemShop extends RaidCommand {
         // Your logic for /raid money here
         Player player = (Player) sender;
         // Open up the raid shop gui
-        new RaidShopGui(player,commandManager.getDataAccessManager()).open();
+        new ItemShopGui(player,commandManager.getDataAccessManager()).open();
     }
 
 

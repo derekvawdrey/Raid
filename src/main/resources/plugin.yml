@@ -20,6 +20,18 @@ commands:
     description: Main command for item
     usage: /item <subcommand>
     aliases: [ r ]
+  spawn:
+    description: Teleport to spawn
+    usage: /spawn
+    aliases: [ r ]
+  setspawn:
+    description: Set spawn location
+    usage: /setspawn
+    aliases: [ r ]
+  wildtp:
+    description: Teleport to a random location in the wild
+    usage: /wildtp
+    aliases: [ r ]
 permissions:
   factionsrevived:
     description: Factions Revived permissions
@@ -95,3 +107,12 @@ permissions:
       factionsrevived.item.enhance:
         description: Allows users to open the item enhance gui
         default: true
+  factionsrevived.spawn:
+    description: Teleport to spawn
+    default: true
+  factionsrevived.setspawn:
+    description: Set spawn
+    default: false
+  factionsrevived.wildtp:
+    description: Teleport to a random location in the wild
+    default: true

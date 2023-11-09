@@ -3,7 +3,7 @@ package me.amogus360.raid.Utilities;
 import me.amogus360.raid.DataAccessManager;
 import me.amogus360.raid.Model.ItemGlow;
 import me.amogus360.raid.Model.LoreLevelInformation;
-import me.amogus360.raid.Model.RaidTools.WeaponHandler;
+import me.amogus360.raid.Model.Items.ItemHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -21,8 +21,52 @@ import java.util.regex.Pattern;
 
 public class RaidToolsUtils {
 
-    public static ItemStack returnItemStackForWeaponHandler(DataAccessManager dataAccessManager, WeaponHandler weaponHandler){
-        if(weaponHandler.getItemType() == WeaponHandler.ItemType.Enhancement){
+    public static void removePriceLore(ItemStack itemStack) {
+        if (itemStack != null && itemStack.hasItemMeta()) {
+            ItemMeta itemMeta = itemStack.getItemMeta();
+
+            if (itemMeta.hasLore()) {
+                List<String> lore = itemMeta.getLore();
+                List<String> newLore = new ArrayList<>();
+
+                for (String line : lore) {
+                    // Check if the line contains "Price:"
+                    if (!line.contains("Price:")) {
+                        newLore.add(line);
+                    }
+                }
+
+                // Set the updated lore without lines containing "Price:" to the item's metadata
+                itemMeta.setLore(newLore);
+
+                // Update the item's metadata
+                itemStack.setItemMeta(itemMeta);
+            }
+        }
+    }
+    public static void addPriceLore(ItemStack itemStack, int price) {
+        if (itemStack != null && itemStack.hasItemMeta()) {
+            ItemMeta itemMeta = itemStack.getItemMeta();
+
+            // Get the current lore, or create a new one if it doesn't exist
+            List<String> lore = itemMeta.getLore();
+            if (lore == null) {
+                lore = new ArrayList<>();
+            }
+
+            // Add the "Price: " + price line to the lore
+            lore.add(ChatColor.GREEN + "Price: " + price);
+
+            // Set the updated lore to the item's metadata
+            itemMeta.setLore(lore);
+
+            // Update the item's metadata
+            itemStack.setItemMeta(itemMeta);
+        }
+    }
+
+    public static ItemStack returnItemStackForWeaponHandler(DataAccessManager dataAccessManager, ItemHandler weaponHandler){
+        if(weaponHandler.getItemType() == ItemHandler.ItemType.Enhancement){
             String activationLore = weaponHandler.getActivationLore();
 
             ItemStack weaponItem = new ItemStack(Material.QUARTZ); // Create an ItemStack with your desired material
@@ -39,7 +83,7 @@ public class RaidToolsUtils {
             itemMeta.addEnchant(glow, 1, true);
             weaponItem.setItemMeta(itemMeta);
             return weaponItem;
-        }else if(weaponHandler.getItemType() == WeaponHandler.ItemType.SingleUse){
+        }else if(weaponHandler.getItemType() == ItemHandler.ItemType.SingleUse){
             String activationLore = weaponHandler.getActivationLore();
 
             ItemStack weaponItem = new ItemStack(Material.BLAZE_POWDER); // Create an ItemStack with your desired material
@@ -56,7 +100,7 @@ public class RaidToolsUtils {
             itemMeta.addEnchant(glow, 1, true);
             weaponItem.setItemMeta(itemMeta);
             return weaponItem;
-        }else if(weaponHandler.getItemType() == WeaponHandler.ItemType.RaidingTool){
+        }else if(weaponHandler.getItemType() == ItemHandler.ItemType.RaidingTool){
             String activationLore = weaponHandler.getActivationLore();
 
             ItemStack weaponItem = new ItemStack(Material.GOAT_HORN); // Create an ItemStack with your desired material
@@ -218,16 +262,15 @@ public class RaidToolsUtils {
         // Define a regular expression pattern to match the enhancement type and level
         Pattern pattern = Pattern.compile("^(§[a-zA-Z\\s]+)\\s([IVXLCDM]+)$");
         Matcher matcher = pattern.matcher(loreLine);
+            if (!loreLine.contains("Price:") && matcher.find()) {
 
-        if (matcher.find()) {
+                // TODO: Insert things to avoid
 
-            // TODO: Insert things to avoid
-
-            String enhancementType = matcher.group(1).trim();
-            String romanNumeral = matcher.group(2).trim();
-            int level = convertRomanToArabic(romanNumeral);
-            return new LoreLevelInformation(enhancementType, level);
-        }
+                String enhancementType = matcher.group(1).trim();
+                String romanNumeral = matcher.group(2).trim();
+                int level = convertRomanToArabic(romanNumeral);
+                return new LoreLevelInformation(enhancementType, level);
+            }
 
         return null;
     }

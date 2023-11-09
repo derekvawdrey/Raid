@@ -1,10 +1,8 @@
-package me.amogus360.raid.Model.RaidTools;
+package me.amogus360.raid.Model.Items;
 
 import me.amogus360.raid.DataAccessManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.WeatherType;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -12,7 +10,7 @@ import org.bukkit.util.Vector;
 
 import java.util.Map;
 
-public interface WeaponHandler {
+public interface ItemHandler {
 
     public static enum ItemCategory {
         RAIDING,
@@ -71,7 +69,7 @@ public interface WeaponHandler {
         }
     }
 
-    default int itemPrice(){
+    default int getItemPrice(){
         return 200;
     }
     default ItemCategory getItemCategory(){

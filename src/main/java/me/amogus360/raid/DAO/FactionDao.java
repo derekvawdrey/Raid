@@ -599,9 +599,9 @@ public class FactionDao {
                 if (resultSet.next()) {
                     int factionId = resultSet.getInt("id");
                     int factionOwnerId = resultSet.getInt("owner_id");
-
+                    int factionMoney = resultSet.getInt("money");
                     // Create a FactionInfo object with the retrieved data
-                    FactionInfo factionInfo = new FactionInfo(factionId, factionName, factionOwnerId);
+                    FactionInfo factionInfo = new FactionInfo(factionId, factionName, factionOwnerId,factionMoney);
                     // Populate other faction information in the FactionInfo object
 
                     return factionInfo;
@@ -612,6 +612,64 @@ public class FactionDao {
         }
         return null; // Return null if the faction with the provided name was not found
     }
+
+    private boolean hasEnoughMoney(int factionId, int amount) {
+        try {
+            if (amount <= 0) {
+                // Ensure that the amount is positive; you can't check for a negative or zero amount.
+                return false;
+            }
+
+            // Prepare a SQL statement to retrieve the current money for a specific faction.
+            String selectSQL = "SELECT money FROM faction WHERE id = ?";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(selectSQL)) {
+                preparedStatement.setInt(1, factionId); // Set the faction ID for which you want to check money
+
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        int currentMoney = resultSet.getInt("money");
+                        return currentMoney >= amount;
+                    } else {
+                        System.out.println("Faction with ID " + factionId + " not found.");
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false; // Return false by default if an error occurs
+    }
+
+
+    private void subtractMoneyFromAccount(int factionId, int amount) {
+        try {
+            if (amount <= 0) {
+                // Ensure that the amount is positive; you can't subtract a negative amount.
+                return;
+            }
+
+            // Prepare the SQL statement to update the money column for a specific faction.
+            String updateSQL = "UPDATE faction SET money = money - ? WHERE id = ?";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(updateSQL)) {
+                preparedStatement.setInt(1, amount);   // Set the amount to subtract
+                preparedStatement.setInt(2, factionId); // Set the faction ID for which you want to subtract money
+
+                int rowsUpdated = preparedStatement.executeUpdate();
+
+                if (rowsUpdated > 0) {
+                    System.out.println(amount + " money subtracted from faction with ID " + factionId);
+                } else {
+                    System.out.println("Faction with ID " + factionId + " not found.");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public List<UUID> getFactionMembersByFactionId(int factionId) {
         List<UUID> members = new ArrayList<>();
         String getMembersSQL = "SELECT player_uuid FROM player_data WHERE faction_id = ?";
@@ -656,7 +714,7 @@ public class FactionDao {
     }
 
     public FactionInfo getFactionInfoByPlayerUUID(UUID playerUUID) {
-        String getFactionInfoSQL = "SELECT f.id AS faction_id, f.name AS faction_name, f.owner_id AS faction_owner " +
+        String getFactionInfoSQL = "SELECT f.id AS faction_id, f.money AS money, f.name AS faction_name, f.owner_id AS faction_owner " +
                 "FROM faction f " +
                 "INNER JOIN player_data p ON f.id = p.faction_id " +
                 "WHERE p.player_uuid = ?";
@@ -669,8 +727,8 @@ public class FactionDao {
                     int factionId = resultSet.getInt("faction_id");
                     String factionName = resultSet.getString("faction_name");
                     int factionOwnerId = resultSet.getInt("faction_owner");
-
-                    return new FactionInfo(factionId, factionName, factionOwnerId);
+                    int factionMoney = resultSet.getInt("money");
+                    return new FactionInfo(factionId, factionName, factionOwnerId, factionMoney);
                 }
             }
         } catch (SQLException e) {

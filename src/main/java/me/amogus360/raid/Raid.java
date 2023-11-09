@@ -5,10 +5,10 @@ import me.amogus360.raid.CommandManager.FactionCommandManager;
 import me.amogus360.raid.CommandManager.ItemCommandManager;
 import me.amogus360.raid.CommandManager.MoneyCommandManager;
 import me.amogus360.raid.CommandManager.RaidCommandManager;
-import me.amogus360.raid.EventHandlers.LandClaimBlockEventHandler;
-import me.amogus360.raid.EventHandlers.PlayerJoinEventHandler;
-import me.amogus360.raid.EventHandlers.RaidBossEventHandler;
-import me.amogus360.raid.EventHandlers.ItemUseEventHandler;
+import me.amogus360.raid.Commands.NoCommandManager.SetSpawnCommand;
+import me.amogus360.raid.Commands.NoCommandManager.SpawnCommand;
+import me.amogus360.raid.Commands.NoCommandManager.WildTeleportCommand;
+import me.amogus360.raid.EventHandlers.*;
 import me.amogus360.raid.Model.ItemGlow;
 import me.amogus360.raid.Tasks.BlockReplacementTask;
 import me.amogus360.raid.Tasks.BossBarUpdateTask;
@@ -55,6 +55,11 @@ public class Raid extends JavaPlugin implements Listener {
         getCommand("money").setExecutor(new MoneyCommandManager(this, this.dataAccessManager));
         getCommand("faction").setExecutor(new FactionCommandManager(this, this.dataAccessManager));
         getCommand("item").setExecutor(new ItemCommandManager(this, this.dataAccessManager));
+
+        // Non-commandManager classes
+        getCommand("spawn").setExecutor(new SpawnCommand(this));
+        getCommand("setspawn").setExecutor(new SetSpawnCommand(this));
+        getCommand("wildtp").setExecutor(new WildTeleportCommand(this));
     }
 
     private void initTasks(){
@@ -71,7 +76,7 @@ public class Raid extends JavaPlugin implements Listener {
         pluginManager.registerEvents(new LandClaimBlockEventHandler(this.dataAccessManager), this);
         pluginManager.registerEvents(new RaidBossEventHandler(this.dataAccessManager), this);
         pluginManager.registerEvents(new ItemUseEventHandler(this.dataAccessManager), this);
-
+        pluginManager.registerEvents(new FactionRevivedChatHandler(this.dataAccessManager), this);
     }
 
     @Override

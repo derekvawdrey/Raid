@@ -38,7 +38,7 @@ public class DeleteFactionCommand extends RaidCommand {
             int factionId = dataAccessManager.getFactionDao().getFactionIdByPlayerUUID(playerUUID);
 
             // Check if there is an ongoing raid for the faction
-            if (dataAccessManager.getRaidDao().isFactionInOngoingRaid(factionId)) {
+            if (dataAccessManager.getRaidDao().isFactionInOngoingRaid(factionId) || dataAccessManager.getRaidDao().isRaidDeclared(factionId)) {
                 MessageManager.sendMessage(player, "You cannot delete the faction while it is involved in a raid.");
             } else {
                 // Remove the player from their current faction and delete it

@@ -33,14 +33,9 @@ public class DepositFactionCommand extends RaidCommand {
             return;
         }
 
-        // Check if the player is the owner of the faction
-        if (!dataAccessManager.getFactionDao().isPlayerFactionOwner(playerUUID)) {
-            MessageManager.sendMessage(player,"Only the faction owner can deposit money.");
-            return;
-        }
 
         if (args.length != 1) {
-            MessageManager.sendMessage(player,"Usage: /depositmoney <amount>");
+            MessageManager.sendMessage(player,"Usage: /faction deposit <amount>");
             return;
         }
 

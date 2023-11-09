@@ -1,7 +1,7 @@
-package me.amogus360.raid.Model.RaidTools.Enhancements;
+package me.amogus360.raid.Model.Items.Raiding;
 
 import me.amogus360.raid.DataAccessManager;
-import me.amogus360.raid.Model.RaidTools.WeaponHandler;
+import me.amogus360.raid.Model.Items.ItemHandler;
 import me.amogus360.raid.Utilities.RaidToolsUtils;
 import me.amogus360.raid.MessageManager;
 import org.bukkit.Location;
@@ -9,11 +9,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
 
-import javax.xml.crypto.Data;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TntJumperHandler implements WeaponHandler {
+public class TntJumperHandler implements ItemHandler {
 
 
     // Implement the TntJumper logic

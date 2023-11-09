@@ -1,12 +1,9 @@
 package me.amogus360.raid.CommandManager;
 
-import me.amogus360.raid.Commands.Faction.CreateFactionCommand;
-import me.amogus360.raid.Commands.Faction.DeleteFactionCommand;
-import me.amogus360.raid.Commands.Faction.FactionInfoCommand;
+import me.amogus360.raid.Commands.Faction.*;
 import me.amogus360.raid.Commands.Faction.Invite.AcceptInvitationCommand;
 import me.amogus360.raid.Commands.Faction.Invite.InviteFactionCommand;
 import me.amogus360.raid.Commands.Faction.Invite.ListInvitesCommand;
-import me.amogus360.raid.Commands.Faction.LeaveFactionCommand;
 import me.amogus360.raid.Commands.Faction.RaidBoss.UpdateFactionBossLocationCommand;
 import me.amogus360.raid.Commands.Faction.Spawn.TeleportSpawnCommand;
 import me.amogus360.raid.Commands.Faction.Spawn.UpdateSpawnLocationCommand;
@@ -46,6 +43,7 @@ public class FactionCommandManager extends CommandManager {
         registerSubCommand("setspawn", new UpdateSpawnLocationCommand(plugin, "/faction setspawn"));
         registerSubCommand("setbosslocation", new UpdateFactionBossLocationCommand(plugin, "/faction setbosslocation"));
         registerSubCommand("spawn", new TeleportSpawnCommand(plugin, "/faction spawn"));
+        registerSubCommand("deposit", new DepositFactionCommand(plugin, "/faction deposit [amount]"));
     }
 
     @Override

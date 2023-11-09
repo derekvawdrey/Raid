@@ -1,7 +1,7 @@
-package me.amogus360.raid.Model.RaidTools.SpecialItems;
+package me.amogus360.raid.Model.Items.Defending;
 
 import me.amogus360.raid.DataAccessManager;
-import me.amogus360.raid.Model.RaidTools.WeaponHandler;
+import me.amogus360.raid.Model.Items.ItemHandler;
 import me.amogus360.raid.Utilities.DefenderUtilities;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -9,7 +9,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 import org.bukkit.inventory.ItemStack;
 
-public class SummonSkeletonDefender implements WeaponHandler {
+public class SummonSkeletonDefender implements ItemHandler {
     @Override
     public void handle(DataAccessManager dataAccessManager,  PlayerInteractEvent event, int level) {
         Player player = event.getPlayer();

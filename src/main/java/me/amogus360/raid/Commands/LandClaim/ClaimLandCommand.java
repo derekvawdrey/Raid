@@ -6,11 +6,14 @@ import me.amogus360.raid.DataAccessManager;
 import me.amogus360.raid.MessageManager;
 import me.amogus360.raid.Model.LandClaim.LandClaim;
 import me.amogus360.raid.CommandManager.RaidCommandManager;
+import me.amogus360.raid.Utilities.GeneralUtilities;
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.UUID;
+
 
 public class ClaimLandCommand extends RaidCommand {
 
@@ -31,6 +34,11 @@ public class ClaimLandCommand extends RaidCommand {
         // Check if the player is in a faction and is the owner or has a specific title (e.g., "officer")
         if (!dataAccessManager.getFactionDao().isPlayerInFaction(playerUUID)) {
             MessageManager.sendMessage(player,"You are not currently in a faction.");
+            return;
+        }
+
+        if(GeneralUtilities.isPlayerNearSpawn(player,plugin)){
+            MessageManager.sendMessage(player, "You can't claim land near spawn!");
             return;
         }
 
