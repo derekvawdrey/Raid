@@ -19,7 +19,7 @@ public class DefenderUtilities {
         location.getChunk().load();
         LivingEntity entity = (LivingEntity) location.getWorld().spawnEntity(location, EntityType.ALLAY);
 
-        entity.setCustomName(ChatColor.BOLD + " " + ChatColor.GREEN + "Defender");
+        entity.setCustomName(ChatColor.BOLD + "" + ChatColor.GREEN + "Defender");
         entity.setCustomNameVisible(true);
         entity.setMaxHealth(200);
         entity.setHealth(200);
@@ -39,9 +39,6 @@ public class DefenderUtilities {
         MetadataValue factionMetadata = new FixedMetadataValue(dataAccessManager.getPlugin(), factionId);
         entity.setMetadata(metadataKey, factionMetadata);
         entity.setMetadata("defender", factionMetadata);
-
-        RaidBossBar entityBossBar = new RaidBossBar(entity);
-        dataAccessManager.getBossBarDataAccess().addBossBar(entityBossBar);
 
         location.getWorld().playSound(entity.getLocation(), Sound.ITEM_GOAT_HORN_SOUND_7, 1.0f, 1.0f);
         location.getWorld().playSound(entity.getLocation(), Sound.ENTITY_VILLAGER_CELEBRATE, 2.0f, 5.0f);

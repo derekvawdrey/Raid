@@ -57,6 +57,7 @@ public abstract class ExtendableGui<T extends ItemHandler> extends Gui {
             i++;
         }
 
+
     }
     // Add common methods and functionality here that can be reused by subclasses.
     protected static Map<String, ItemHandler> initalizeRaidItems() {

@@ -56,7 +56,7 @@ public class ItemEnhanceGui extends Gui {
 
         advancedSlot2.onPrePutClick((e, item) -> {
             if (!item.getType().equals(Material.GOAT_HORN)) {
-                player.sendMessage("You cannot put items here except Stick.");
+                player.sendMessage("You cannot put items here except Goat Horn.");
 
                 return true;
             }
