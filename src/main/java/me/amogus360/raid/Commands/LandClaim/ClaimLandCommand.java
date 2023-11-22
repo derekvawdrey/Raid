@@ -61,6 +61,11 @@ public class ClaimLandCommand extends RaidCommand {
             return;
         }
 
+        if(!dataAccessManager.getFactionDao().hasEnoughMoney(factionId, 10)){
+            MessageManager.sendMessage(player,"Your faction does not have enough money! Type /faction deposit [amount] to put money into your faction.");
+            return;
+        }
+
         if(dataAccessManager.getLandClaimDao().isClaimed(player.getLocation())){
             MessageManager.sendMessage(player,"You have already claimed this chunk!");
             return;

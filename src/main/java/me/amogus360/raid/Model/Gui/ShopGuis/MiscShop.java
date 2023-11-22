@@ -6,8 +6,6 @@ import org.bukkit.entity.Player;
 
 public class MiscShop extends ExtendableGui<ItemHandler> {
     public MiscShop(Player player, DataAccessManager dataAccessManager) {
-        super(player, "Misc Item Shop", 3, initalizeMiscItems(), dataAccessManager);
+        super(player, "Misc Item Shop", 3, initalizeMiscItems(), dataAccessManager, false);
     }
-
-
 }

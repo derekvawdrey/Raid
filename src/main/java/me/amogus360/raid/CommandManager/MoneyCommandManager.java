@@ -19,7 +19,7 @@ public class MoneyCommandManager extends CommandManager {
     @Override
     protected void registerSubCommands() {
         // Register your subcommands here
-        registerSubCommand("show", new MoneyCommand(plugin, "/money show"));
+        registerSubCommand("", new MoneyCommand(plugin, "/money"));
         registerSubCommand("add", new AddMoneyCommand(plugin, "/money add [player_name] [amount]"));
         registerSubCommand("send", new SendMoneyCommand(plugin, "/money send [player_name] [amount]"));
     }

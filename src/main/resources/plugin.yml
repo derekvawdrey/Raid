@@ -11,27 +11,35 @@ commands:
   faction:
     description: Main command for factions
     usage: /faction <subcommand>
-    aliases: [ r ]
+    aliases: [r]
   money:
     description: Main command for money
     usage: /money <subcommand>
-    aliases: [ r ]
+    aliases: [r]
+  land:
+    description: Main command for land
+    usage: /land <subcommand>
+    aliases: [r]
   item:
     description: Main command for item
     usage: /item <subcommand>
-    aliases: [ r ]
+    aliases: [r]
+  invite:
+    description: Main command for invite
+    usage: /invite <subcommand>
+    aliases: [r]
   spawn:
     description: Teleport to spawn
     usage: /spawn
-    aliases: [ r ]
+    aliases: [r]
   setspawn:
     description: Set spawn location
     usage: /setspawn
-    aliases: [ r ]
+    aliases: [r]
   wildtp:
     description: Teleport to a random location in the wild
     usage: /wildtp
-    aliases: [ r ]
+    aliases: [r]
 permissions:
   factionsrevived:
     description: Factions Revived permissions
@@ -68,21 +76,6 @@ permissions:
       factionsrevived.faction.info:
         description: Gets the info of the faction
         default: true
-      factionsrevived.faction.land.claim:
-        description: Allows a faction to claim land
-        default: true
-      factionsrevived.faction.land.show:
-        description: Shows land claims of a faction
-        default: true
-      factionsrevived.faction.invite.send:
-        description: Sends an invitation to a player
-        default: true
-      factionsrevived.faction.invite.accept:
-        description: Accepts an invitation to a faction
-        default: true
-      factionsrevived.faction.invite.show:
-        description: Shows a list of pending invitations
-        default: true
       factionsrevived.faction.leave:
         description: Allows a player to leave a faction
         default: true
@@ -106,6 +99,27 @@ permissions:
         default: true
       factionsrevived.item.enhance:
         description: Allows users to open the item enhance gui
+        default: true
+  factionsrevived.invite:
+    description: Invite-related permissions
+    children:
+      factionsrevived.invite.send:
+        description: Sends an invitation to a player
+        default: true
+      factionsrevived.invite.accept:
+        description: Accepts an invitation to a faction
+        default: true
+      factionsrevived.invite.show:
+        description: Shows a list of pending invitations
+        default: true
+  factionsrevived.land:
+    description: Land-related permissions
+    children:
+      factionsrevived.land.claim:
+        description: Allows users to claim land
+        default: true
+      factionsrevived.land.show:
+        description: Allows users to show land claims
         default: true
   factionsrevived.spawn:
     description: Teleport to spawn

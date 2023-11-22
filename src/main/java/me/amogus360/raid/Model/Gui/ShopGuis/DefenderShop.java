@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 
 public class DefenderShop extends ExtendableGui<ItemHandler> {
     public DefenderShop(Player player, DataAccessManager dataAccessManager) {
-        super(player, "Defender Item Shop", 3, initalizeDefenderItems(), dataAccessManager);
+        super(player, "Defender Item Shop", 3, initalizeDefenderItems(), dataAccessManager, false);
     }
 
 

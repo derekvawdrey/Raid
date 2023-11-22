@@ -33,11 +33,6 @@ public class FactionCommandManager extends CommandManager {
         // Register your subcommands here
         registerSubCommand("create", new CreateFactionCommand(plugin, "/faction create [faction_name]"));
         registerSubCommand("info", new FactionInfoCommand(plugin, "/faction info"));
-        registerSubCommand("land claim", new ClaimLandCommand(plugin, "/faction land claim"));
-        registerSubCommand("land show", new ShowLandClaimsCommand(plugin, "/faction land show"));
-        registerSubCommand("invite send", new InviteFactionCommand(plugin, "/faction invite send [player]"));
-        registerSubCommand("invite accept", new AcceptInvitationCommand(plugin, "/faction invite accept [faction-name]"));
-        registerSubCommand("invite show", new ListInvitesCommand(plugin, "/faction invite show"));
         registerSubCommand("leave", new LeaveFactionCommand(plugin, "/faction leave"));
         registerSubCommand("delete", new DeleteFactionCommand(plugin, "/faction delete"));
         registerSubCommand("setspawn", new UpdateSpawnLocationCommand(plugin, "/faction setspawn"));

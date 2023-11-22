@@ -1,10 +1,7 @@
 package me.amogus360.raid;
 
 import mc.obliviate.inventory.InventoryAPI;
-import me.amogus360.raid.CommandManager.FactionCommandManager;
-import me.amogus360.raid.CommandManager.ItemCommandManager;
-import me.amogus360.raid.CommandManager.MoneyCommandManager;
-import me.amogus360.raid.CommandManager.RaidCommandManager;
+import me.amogus360.raid.CommandManager.*;
 import me.amogus360.raid.Commands.NoCommandManager.SetSpawnCommand;
 import me.amogus360.raid.Commands.NoCommandManager.SpawnCommand;
 import me.amogus360.raid.Commands.NoCommandManager.WildTeleportCommand;
@@ -55,6 +52,8 @@ public class Raid extends JavaPlugin implements Listener {
         getCommand("money").setExecutor(new MoneyCommandManager(this, this.dataAccessManager));
         getCommand("faction").setExecutor(new FactionCommandManager(this, this.dataAccessManager));
         getCommand("item").setExecutor(new ItemCommandManager(this, this.dataAccessManager));
+        getCommand("land").setExecutor(new LandCommandManager(this, this.dataAccessManager));
+        getCommand("invite").setExecutor(new InviteCommandManager(this, this.dataAccessManager));
 
         // Non-commandManager classes
         getCommand("spawn").setExecutor(new SpawnCommand(this));

@@ -26,17 +26,19 @@ import java.util.Map;
 public abstract class ExtendableGui<T extends ItemHandler> extends Gui {
     protected final Map<String, T> itemHandlers;
     protected final DataAccessManager dataAccessManager;
+    protected final boolean addAdditionalItems;
 
 
-    public ExtendableGui(Player player, String title, int rows, Map<String, T> itemHandlers, DataAccessManager dataAccessManager) {
+    public ExtendableGui(Player player, String title, int rows, Map<String, T> itemHandlers, DataAccessManager dataAccessManager, boolean addAdditionalItems) {
         super(player, title, "Item Shop", rows);
         this.itemHandlers = itemHandlers;
         this.dataAccessManager = dataAccessManager;
+        this.addAdditionalItems = addAdditionalItems;
     }
 
     @Override
     public void onOpen(InventoryOpenEvent event) {
-
+ 
         ItemStack filler = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
         ItemMeta fillerItemMeta = filler.getItemMeta();
         fillerItemMeta.setDisplayName("");
@@ -56,9 +58,16 @@ public abstract class ExtendableGui<T extends ItemHandler> extends Gui {
             addItem(finalI, icon);
             i++;
         }
-
+        if(addAdditionalItems) {
+            addAdditionalItems(i);
+        }
 
     }
+
+    public void addAdditionalItems(int i) {
+
+    }
+
     // Add common methods and functionality here that can be reused by subclasses.
     protected static Map<String, ItemHandler> initalizeRaidItems() {
         Map<String, ItemHandler> weaponHandlers = new HashMap<>();
@@ -70,6 +79,7 @@ public abstract class ExtendableGui<T extends ItemHandler> extends Gui {
         weaponHandlers.put(tntJumperHandler.getActivationLore(), tntJumperHandler);
         weaponHandlers.put(tntShotgunHandler.getActivationLore(), tntShotgunHandler);
         weaponHandlers.put(tntLauncherHandler.getActivationLore(), tntLauncherHandler);
+
         return weaponHandlers;
     }
     protected static Map<String, ItemHandler> initalizeDefenderItems() {

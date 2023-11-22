@@ -613,7 +613,7 @@ public class FactionDao {
         return null; // Return null if the faction with the provided name was not found
     }
 
-    private boolean hasEnoughMoney(int factionId, int amount) {
+    public boolean hasEnoughMoney(int factionId, int amount) {
         try {
             if (amount <= 0) {
                 // Ensure that the amount is positive; you can't check for a negative or zero amount.

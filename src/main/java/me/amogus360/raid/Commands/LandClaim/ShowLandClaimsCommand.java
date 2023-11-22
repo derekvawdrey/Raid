@@ -68,7 +68,7 @@ public class ShowLandClaimsCommand extends RaidCommand {
 
             factionName = claimedChunk.getFactionString();
             // Add an extra particle at the highest Y coordinate to indicate continuation upwards
-            int highestY = (int) player.getLocation().getY() + yRange + 1;
+            int highestY = (int) player.getLocation().getY() - 1;
             double particleX = chunk_x * landClaimSize + 0.5;
             double particleY = highestY + 0.5;
             double particleZ = chunk_z * landClaimSize + 0.5;

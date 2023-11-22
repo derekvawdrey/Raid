@@ -90,7 +90,7 @@ public class BlockUtilities {
             // BlockChanger.setBlockAsynchronously(blockLocation, block, false);
 
             // TODO: Test and see if this actually works.
-            world.setBlockData(blockLocation,blockData);
+            world.getBlockAt(blockLocation).setBlockData(blockData, true);
         }
         //return null;
     }

@@ -37,34 +37,24 @@ public abstract class CommandManager implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (args.length == 0) {
-            // Display a help message or handle it as needed
-            listAvailableSubcommands(sender, "");
-            return true;
+        StringBuilder subCommandName = new StringBuilder("");
+        if (args.length != 0) {
+            subCommandName = new StringBuilder(args[0].toLowerCase());
         }
 
-        StringBuilder subCommandName = new StringBuilder(args[0].toLowerCase());
+
         RaidCommand subCommand = subCommands.get(subCommandName.toString());
         if (subCommand != null) {
-            // Execute the subcommand and remove the used args
-            if(!sender.hasPermission("factionsrevived." + this.baseCommand + "." + subCommandName.toString().replace(" ", "."))) {
-                MessageManager.sendMessage(sender, "You don't have permission to run this command");
-            }
-            subCommand.execute(sender, Arrays.copyOfRange(args, 1, args.length), this);
-            return true;
-        }
-
-
-
-        for (int i = 1; i < args.length; i++) {
-            subCommandName.append(" ").append(args[i].toLowerCase());
-            subCommand = subCommands.get(subCommandName.toString());
-            if (subCommand != null) {
+            // Execute base command, or don't
+            if(args.length == 0){
+                subCommand.execute(sender, args, this);
+                return true;
+            }else {
                 // Execute the subcommand and remove the used args
-                if(!sender.hasPermission("factionsrevived." + this.baseCommand + "." + subCommandName.toString().replace(" ", "."))) {
+                if (!sender.hasPermission("factionsrevived." + this.baseCommand + "." + subCommandName.toString().replace(" ", "."))) {
                     MessageManager.sendMessage(sender, "You don't have permission to run this command");
                 }
-                subCommand.execute(sender, Arrays.copyOfRange(args, i+1, args.length), this);
+                subCommand.execute(sender, Arrays.copyOfRange(args, 1, args.length), this);
                 return true;
             }
         }
