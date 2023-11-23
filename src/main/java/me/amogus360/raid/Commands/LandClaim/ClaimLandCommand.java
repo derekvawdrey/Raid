@@ -27,6 +27,8 @@ public class ClaimLandCommand extends RaidCommand {
             return;
         }
 
+        int claimPrice = 50;
+
         Player player = (Player) sender;
         UUID playerUUID = player.getUniqueId();
         DataAccessManager dataAccessManager = commandManager.getDataAccessManager();
@@ -61,8 +63,8 @@ public class ClaimLandCommand extends RaidCommand {
             return;
         }
 
-        if(!dataAccessManager.getFactionDao().hasEnoughMoney(factionId, 10)){
-            MessageManager.sendMessage(player,"Your faction does not have enough money! Type /faction deposit [amount] to put money into your faction.");
+        if(!dataAccessManager.getFactionDao().hasEnoughMoney(factionId, claimPrice)){
+            MessageManager.sendMessage(player,"Your faction does not have enough money! Type /faction deposit [amount] to put money into your faction. Type /faction info to see how much you have.");
             return;
         }
 
@@ -73,6 +75,7 @@ public class ClaimLandCommand extends RaidCommand {
 
         // If all conditions are met, execute the land claim by adding it to the database (you need to implement this part)
         LandClaim landClaim = dataAccessManager.getLandClaimDao().claimLand(factionId,player.getLocation());
+        dataAccessManager.getFactionDao().subtractMoneyFromAccount(factionId, claimPrice);
         MessageManager.sendMessage(player,"Land claimed successfully. Chunk_X = " + landClaim.getLocation().getX() + ", Chunk_Z = " + landClaim.getLocation().getZ());
     }
 }

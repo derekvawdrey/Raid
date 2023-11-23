@@ -37,7 +37,7 @@ public class DefenderUtilities {
         entity.addPotionEffect(regenerationEffect);
 
         entity.getPersistentDataContainer().set(new NamespacedKey(dataAccessManager.getPlugin(), "faction_id"), PersistentDataType.INTEGER, faction_id);
-        entity.getPersistentDataContainer().set(new NamespacedKey(dataAccessManager.getPlugin(), "grave_player"), PersistentDataType.INTEGER, faction_id);
+        entity.getPersistentDataContainer().set(new NamespacedKey(dataAccessManager.getPlugin(), "defender"), PersistentDataType.INTEGER, faction_id);
 
         location.getWorld().playSound(entity.getLocation(), Sound.ITEM_GOAT_HORN_SOUND_7, 1.0f, 1.0f);
         location.getWorld().playSound(entity.getLocation(), Sound.ENTITY_VILLAGER_CELEBRATE, 2.0f, 5.0f);

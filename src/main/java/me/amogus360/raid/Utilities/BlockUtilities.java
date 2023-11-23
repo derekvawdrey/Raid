@@ -6,10 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.Barrel;
-import org.bukkit.block.Block;
-import org.bukkit.block.Chest;
-import org.bukkit.block.ShulkerBox;
+import org.bukkit.block.*;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.Inventory;
@@ -40,22 +37,41 @@ public class BlockUtilities {
 
         if (block.getState() instanceof InventoryHolder) {
             InventoryHolder holder = (InventoryHolder) block.getState();
-            Inventory inventory = holder.getInventory();
-            blockInfo.setChestContents(new ArrayList<>());
 
-            for (ItemStack item : holder.getInventory().getContents()) {
-                if (item != null && item.getType() != Material.AIR) {
-                    blockInfo.getChestContents().add(item.clone());
+            if (holder instanceof DoubleChest) {
+                DoubleChest doubleChest = (DoubleChest) holder;
+                InventoryHolder leftSide = doubleChest.getLeftSide();
+                InventoryHolder rightSide = doubleChest.getRightSide();
+
+                // Assuming the block you are checking is the left side
+                if (holder.equals(leftSide)) {
+                    handleSingleChestInventory(blockInfo, leftSide.getInventory());
+                } else if (holder.equals(rightSide)) {
+                    handleSingleChestInventory(blockInfo, rightSide.getInventory());
                 }
+            } else {
+                handleSingleChestInventory(blockInfo, holder.getInventory());
             }
-            // Stop the chest from spitting out its contents, stopping dupping from occuring
-            inventory.clear();
-
         }
-
 
         return blockInfo;
     }
+
+    private static void handleSingleChestInventory(BlockInfo blockInfo, Inventory inventory) {
+        blockInfo.setChestContents(new ArrayList<>());
+
+        for (ItemStack item : inventory.getContents()) {
+            if (item != null && item.getType() != Material.AIR) {
+                blockInfo.getChestContents().add(item.clone());
+            }
+        }
+
+        // Stop the chest from spitting out its contents, stopping duping from occurring
+        inventory.clear();
+    }
+
+
+
     public static void placeBlockArray(List<BlockInfo> blockInfoArray){
         Map<String,World> worldMap = new HashMap<String,World>();
         Map<BlockInfo, World> blockInfoToBlockMap = new HashMap<>();
@@ -100,6 +116,7 @@ public class BlockUtilities {
         int y = blockInfo.getY();
         int z = blockInfo.getZ();
         Block block = world.getBlockAt(x,y,z);
+
         if (block.getState() instanceof InventoryHolder) {
             InventoryHolder holder = (InventoryHolder) block.getState();
             List<ItemStack> chestContents = blockInfo.getChestContents();

@@ -6,13 +6,15 @@ import org.bukkit.block.Block;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class BlockInfoDao {
 
     private final Connection connection;
-
+    private Set<String> uniqueCoordinates = new HashSet<>();
     public BlockInfoDao(Connection connection) {
         this.connection = connection;
     }
@@ -53,7 +55,8 @@ public class BlockInfoDao {
                     String blockInfoJson = resultSet.getString("block_info_json");
                     BlockInfo blockInfo = BlockInfo.fromJson(blockInfoJson);
                     blocksToReplace.add(blockInfo);
-
+                    String coordinatesKey = blockInfo.getX() + "," + blockInfo.getY() + "," + blockInfo.getZ();
+                    uniqueCoordinates.remove(coordinatesKey);
                     // Store the ID for deletion
                     int blockId = resultSet.getInt("id");
                     blockIdsToDelete.add(blockId);
@@ -90,6 +93,8 @@ public class BlockInfoDao {
 
 
 
+
+
     public void insertBlocks(List<Block> blockList, Timestamp restorationDate) {
         try {
             connection.setAutoCommit(false);
@@ -98,10 +103,13 @@ public class BlockInfoDao {
             );
 
             for (Block block : blockList) {
-                BlockInfo blockInfo = BlockUtilities.convertBlockToBlockInfo(block.getWorld(), block.getX(), block.getY(), block.getZ(), block);
-                preparedStatement.setString(1, blockInfo.toJson());
-                preparedStatement.setTimestamp(2, restorationDate);
-                preparedStatement.addBatch();
+                String coordinatesKey = block.getX() + "," + block.getY() + "," + block.getZ();
+                if(uniqueCoordinates.add(coordinatesKey)) {
+                    BlockInfo blockInfo = BlockUtilities.convertBlockToBlockInfo(block.getWorld(), block.getX(), block.getY(), block.getZ(), block);
+                    preparedStatement.setString(1, blockInfo.toJson());
+                    preparedStatement.setTimestamp(2, restorationDate);
+                    preparedStatement.addBatch();
+                }
             }
 
             preparedStatement.executeBatch();

@@ -6,12 +6,12 @@ import me.amogus360.raid.DataAccessManager;
 import me.amogus360.raid.MessageManager;
 import me.amogus360.raid.Model.Items.Defending.SummonSkeletonDefender;
 import me.amogus360.raid.Model.Items.ItemHandler;
+import me.amogus360.raid.Model.Items.Misc.TeleportationShard;
 import me.amogus360.raid.Model.Items.Raiding.TntJumperHandler;
 import me.amogus360.raid.Model.Items.Raiding.TntLauncherHandler;
 import me.amogus360.raid.Model.Items.Raiding.TntShotgunHandler;
 import me.amogus360.raid.Utilities.MoneyUtilities;
 import me.amogus360.raid.Utilities.RaidToolsUtils;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -92,7 +92,9 @@ public abstract class ExtendableGui<T extends ItemHandler> extends Gui {
     }
     protected static Map<String, ItemHandler> initalizeMiscItems() {
         Map<String, ItemHandler> weaponHandlers = new HashMap<>();
+        TeleportationShard teleportShard = new TeleportationShard();
 
+        weaponHandlers.put(teleportShard.getActivationLore(), teleportShard);
         return weaponHandlers;
     }
 

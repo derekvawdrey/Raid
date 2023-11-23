@@ -25,6 +25,9 @@ public class SetSpawnCommand implements CommandExecutor {
 
         if(!commandSender.hasPermission("factionsrevived.setspawn")) {
             MessageManager.sendMessage(commandSender, "You don't have permission to run this command");
+            return true;
+        }else{
+            MessageManager.sendMessage(commandSender, "Spawn has been set!");
             Player player = (Player) commandSender;
             plugin.getConfig().set("spawnLocation", player.getLocation());
             plugin.saveConfig();

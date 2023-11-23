@@ -1,6 +1,7 @@
 package me.amogus360.raid;
 
 import me.amogus360.raid.DAO.*;
+import org.bukkit.entity.Item;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.Connection;
@@ -15,6 +16,8 @@ public class DataAccessManager {
 
     private final RaidDao raidDao;
 
+    private final ItemDao itemDao;
+
     private final JavaPlugin plugin;
     public DataAccessManager(Connection connection, JavaPlugin plugin){
         this.factionDao = new FactionDao(connection);
@@ -22,6 +25,7 @@ public class DataAccessManager {
         this.landClaimDao = new LandClaimDao(connection);
         this.blockInfoDao = new BlockInfoDao(connection);
         this.bossBarDataAccess = new BossBarDao();
+        this.itemDao = new ItemDao(connection);
         this.raidDao = new RaidDao(connection);
         this.plugin = plugin;
     }
@@ -39,7 +43,7 @@ public class DataAccessManager {
     public LandClaimDao getLandClaimDao(){
         return landClaimDao;
     }
-
+    public ItemDao getItemDao(){ return itemDao;}
     public BlockInfoDao getBlockInfoDao(){ return blockInfoDao;}
     public BossBarDao getBossBarDataAccess(){return bossBarDataAccess;}
     public RaidDao getRaidDao() {

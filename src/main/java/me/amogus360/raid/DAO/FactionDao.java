@@ -643,7 +643,7 @@ public class FactionDao {
     }
 
 
-    private void subtractMoneyFromAccount(int factionId, int amount) {
+    public void subtractMoneyFromAccount(int factionId, int amount) {
         try {
             if (amount <= 0) {
                 // Ensure that the amount is positive; you can't subtract a negative amount.

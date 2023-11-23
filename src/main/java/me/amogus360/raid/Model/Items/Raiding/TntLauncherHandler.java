@@ -45,4 +45,6 @@ public class TntLauncherHandler implements ItemHandler {
         return itemChatColor(this.getItemCategory()) + "Tnt Cannon";
     }
 
+    @Override
+    public int getItemPrice(){ return 500; }
 }

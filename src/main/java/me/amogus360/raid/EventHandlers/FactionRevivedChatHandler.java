@@ -28,4 +28,6 @@ public class FactionRevivedChatHandler implements Listener {
 
         event.setFormat(modifiedFormat);
     }
+
+
 }

@@ -4,6 +4,8 @@ import mc.obliviate.inventory.InventoryAPI;
 import me.amogus360.raid.CommandManager.*;
 import me.amogus360.raid.Commands.NoCommandManager.SetSpawnCommand;
 import me.amogus360.raid.Commands.NoCommandManager.SpawnCommand;
+import me.amogus360.raid.Commands.NoCommandManager.TeleportRequest.TeleportAccept;
+import me.amogus360.raid.Commands.NoCommandManager.TeleportRequest.TeleportDeny;
 import me.amogus360.raid.Commands.NoCommandManager.WildTeleportCommand;
 import me.amogus360.raid.EventHandlers.*;
 import me.amogus360.raid.Model.ItemGlow;
@@ -59,6 +61,8 @@ public class Raid extends JavaPlugin implements Listener {
         getCommand("spawn").setExecutor(new SpawnCommand(this));
         getCommand("setspawn").setExecutor(new SetSpawnCommand(this));
         getCommand("wildtp").setExecutor(new WildTeleportCommand(this));
+        getCommand("tpaccept").setExecutor(new TeleportAccept(this, dataAccessManager));
+        getCommand("tpdeny").setExecutor(new TeleportDeny(this, dataAccessManager));
     }
 
     private void initTasks(){

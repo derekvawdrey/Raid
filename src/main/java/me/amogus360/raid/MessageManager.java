@@ -1,5 +1,6 @@
 package me.amogus360.raid;
 
+import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -17,6 +18,12 @@ public class MessageManager {
         String styledMessage = ChatColor.WHITE + message + ChatColor.YELLOW + " <<";
         sender.sendMessage(prefix + " " + styledMessage);
     }
+
+    public static void sendMessage(CommandSender sender, BaseComponent... components) {
+        String prefix = getPluginPrefixColors("Factions Revived");
+        sender.spigot().sendMessage(components);
+    }
+
 
     // Method to send a prefixed message to a Player
     public static void sendMessage(Player player, String message) {

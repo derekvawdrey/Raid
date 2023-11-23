@@ -20,6 +20,14 @@ commands:
     description: Main command for land
     usage: /land <subcommand>
     aliases: [r]
+  tpdeny:
+    description: Deny teleportation request
+    usage: /tpdeny <player_name>
+    aliases: [r]
+  tpaccept:
+    description: Accept teleportation request
+    usage: /tpaccept <player_name>
+    aliases: [r]
   item:
     description: Main command for item
     usage: /item <subcommand>
@@ -84,7 +92,7 @@ permissions:
         default: true
       factionsrevived.faction.setspawn:
         description: Sets the faction's spawn location
-        default: true
+        default: false
       factionsrevived.faction.setbosslocation:
         description: Sets the location of the faction's boss
         default: true
@@ -123,6 +131,12 @@ permissions:
         default: true
   factionsrevived.spawn:
     description: Teleport to spawn
+    default: true
+  factionsrevived.tpaccept:
+    description: Accept a teleport request
+    default: true
+  factionsrevived.tpdeny:
+    description: Deny a teleport request
     default: true
   factionsrevived.setspawn:
     description: Set spawn

@@ -39,8 +39,8 @@ public class RaidBossUtilities {
 
         int factionId = faction_id; // Replace with the actual faction ID
         String metadataKey = "faction_id";
-        MetadataValue factionMetadata = new FixedMetadataValue(dataAccessManager.getPlugin(), factionId);
-        entity.setMetadata(metadataKey, factionMetadata);
+
+        entity.getPersistentDataContainer().set(new NamespacedKey(dataAccessManager.getPlugin(), "faction_id"), PersistentDataType.INTEGER, faction_id);
 
         RaidBossBar entityBossBar = new RaidBossBar(entity);
         dataAccessManager.getBossBarDataAccess().addBossBar(entityBossBar);

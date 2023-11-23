@@ -45,6 +45,7 @@ public class TntShotgunHandler implements ItemHandler {
     public String getActivationLore() {
         return itemChatColor(this.getItemCategory()) + "Tnt Scattershot";
     }
-
+    @Override
+    public int getItemPrice(){ return 750; }
 
 }

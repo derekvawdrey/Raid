@@ -33,6 +33,7 @@ public class UpdateSpawnLocationCommand extends RaidCommand {
         if(!commandManager.getDataAccessManager().getFactionDao().isPlayerFactionOwner(player.getUniqueId())
                 && !commandManager.getDataAccessManager().getFactionDao().hasFactionTitle(player.getUniqueId(), "officer")){
             MessageManager.sendMessage(player, "You are not an officer or owner of a faction, you can't use this command!");
+            return;
         }
 
         if (factionInfo != null && dataAccessManager.getLandClaimDao().isClaimedByFactionId(player.getLocation(), factionInfo.getFactionId())) {

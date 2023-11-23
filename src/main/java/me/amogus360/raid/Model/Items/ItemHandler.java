@@ -3,6 +3,7 @@ package me.amogus360.raid.Model.Items;
 import me.amogus360.raid.DataAccessManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -88,6 +89,17 @@ public interface ItemHandler {
             return itemChatColor(this.getItemCategory()) + "" + ChatColor.BOLD + "Raiding Tool";
         }
         return itemChatColor(this.getItemCategory()) + "" + ChatColor.BOLD + "Unknown";
+    }
+
+    default Material getItemMaterial(){
+        if(this.getItemType() == ItemType.Enhancement){
+            return Material.QUARTZ;
+        }else if(this.getItemType() == ItemType.SingleUse){
+            return Material.BLAZE_POWDER;
+        }else if(this.getItemType() == ItemType.RaidingTool){
+            return Material.GOAT_HORN;
+        }
+        return Material.FIRE;
     }
 
     public String getActivationLore();

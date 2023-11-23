@@ -36,4 +36,7 @@ public class SummonSkeletonDefender implements ItemHandler {
     public String getActivationLore() {
         return itemChatColor(this.getItemCategory()) + "Summon Skeleton Defender";
     }
+
+    @Override
+    public int getItemPrice(){ return 1000; }
 }

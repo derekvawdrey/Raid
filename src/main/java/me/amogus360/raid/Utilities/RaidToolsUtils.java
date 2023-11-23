@@ -66,64 +66,9 @@ public class RaidToolsUtils {
     }
 
     public static ItemStack returnItemStackForWeaponHandler(DataAccessManager dataAccessManager, ItemHandler weaponHandler){
-        if(weaponHandler.getItemType() == ItemHandler.ItemType.Enhancement){
-            String activationLore = weaponHandler.getActivationLore();
-
-            ItemStack weaponItem = new ItemStack(Material.QUARTZ); // Create an ItemStack with your desired material
-            ItemMeta itemMeta = weaponItem.getItemMeta();
-
-            // Create a sample lore string to match against the item's lore
-            String sampleLore = RaidToolsUtils.createLoreString(activationLore, 1);
-
-            // Set the lore of the displayed item
-            itemMeta.setLore(Collections.singletonList(sampleLore));
-            itemMeta.setDisplayName(weaponHandler.getItemName());
-            NamespacedKey key = new NamespacedKey(dataAccessManager.getPlugin(), dataAccessManager.getPlugin().getDescription().getName());
-            ItemGlow glow = new ItemGlow(key);
-            itemMeta.addEnchant(glow, 1, true);
-            weaponItem.setItemMeta(itemMeta);
-            return weaponItem;
-        }else if(weaponHandler.getItemType() == ItemHandler.ItemType.SingleUse){
-            String activationLore = weaponHandler.getActivationLore();
-
-            ItemStack weaponItem = new ItemStack(Material.BLAZE_POWDER); // Create an ItemStack with your desired material
-            ItemMeta itemMeta = weaponItem.getItemMeta();
-
-            // Create a sample lore string to match against the item's lore
-            String sampleLore = RaidToolsUtils.createLoreString(activationLore, 1);
-
-            // Set the lore of the displayed item
-            itemMeta.setLore(Collections.singletonList(sampleLore));
-            itemMeta.setDisplayName(weaponHandler.getItemName());
-            NamespacedKey key = new NamespacedKey(dataAccessManager.getPlugin(), dataAccessManager.getPlugin().getDescription().getName());
-            ItemGlow glow = new ItemGlow(key);
-            itemMeta.addEnchant(glow, 1, true);
-            weaponItem.setItemMeta(itemMeta);
-            return weaponItem;
-        }else if(weaponHandler.getItemType() == ItemHandler.ItemType.RaidingTool){
-            String activationLore = weaponHandler.getActivationLore();
-
-            ItemStack weaponItem = new ItemStack(Material.GOAT_HORN); // Create an ItemStack with your desired material
-            ItemMeta itemMeta = weaponItem.getItemMeta();
-
-            // Create a sample lore string to match against the item's lore
-            String sampleLore = RaidToolsUtils.createLoreString(activationLore, 1);
-
-            // Set the lore of the displayed item
-            itemMeta.setLore(Collections.singletonList(sampleLore));
-            itemMeta.setDisplayName(weaponHandler.getItemName());
-            NamespacedKey key = new NamespacedKey(dataAccessManager.getPlugin(), dataAccessManager.getPlugin().getDescription().getName());
-            ItemGlow glow = new ItemGlow(key);
-            itemMeta.addEnchant(glow, 1, true);
-            weaponItem.setItemMeta(itemMeta);
-            return weaponItem;
-        }
-
-
-        // Just a filler for now
         String activationLore = weaponHandler.getActivationLore();
 
-        ItemStack weaponItem = new ItemStack(Material.APPLE); // Create an ItemStack with your desired material
+        ItemStack weaponItem = new ItemStack(weaponHandler.getItemMaterial()); // Create an ItemStack with your desired material
         ItemMeta itemMeta = weaponItem.getItemMeta();
 
         // Create a sample lore string to match against the item's lore
@@ -137,7 +82,6 @@ public class RaidToolsUtils {
         itemMeta.addEnchant(glow, 1, true);
         weaponItem.setItemMeta(itemMeta);
         return weaponItem;
-
     }
 
     public static List<Block> onTNTExplode(Location source, List<Block> blocks) {
